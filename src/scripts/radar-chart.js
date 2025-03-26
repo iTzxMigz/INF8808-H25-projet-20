@@ -1,7 +1,8 @@
-let currentSort = 'TV Shows & Movies';
+let currentSort = 'Country Name';
+let ascending = false;
 export function createChangingModeButton(dataRadarChartAge, dataRadarChartCat) {
     let isAgeCertMode = true;
-    let ascending = true;
+    let data = dataRadarChartAge;
     const div = d3.select('#viz-container-3')
       .insert('div', function() { return this.firstChild; })
       .style('width', '100%')
@@ -23,6 +24,7 @@ export function createChangingModeButton(dataRadarChartAge, dataRadarChartCat) {
         .on('click', function () {
           ascending = !ascending;
           d3.select(this).text(getSortLabel(currentSort, ascending));
+          updateRadar(data);
         });
 
     const dropdownContent = dropdown.append('div')
@@ -46,15 +48,19 @@ export function createChangingModeButton(dataRadarChartAge, dataRadarChartCat) {
           d3.select("#radar-toggle-btn").text(
               isAgeCertMode ? "Switch to Categories" : "Switch to Age Ratings"
           );
-          const data = isAgeCertMode ? dataRadarChartAge : dataRadarChartCat;
+          data = isAgeCertMode ? dataRadarChartAge : dataRadarChartCat;
           drawMultipleRadarCharts(data, isAgeCertMode);
-          updateDropdownOptions(data, true);
+          currentSort = 'Country Name';
+          ascending = false;
+          updateDropdownOptions(data);
+          d3.select('#dropdown-btn').text(getSortLabel(currentSort, false));
+
         });
     updateDropdownOptions(dataRadarChartAge, ascending);
 }
 
-function updateDropdownOptions(data, ascending) {
-  const staticSorting = ["Country Name", "Diversity", "TV Shows & Movies"];
+function updateDropdownOptions(data) {
+  const staticSorting = ["Country Name", "Diversity"];
   let axis = data[0].values.map(d => d.axis);
   const allOptions = [...staticSorting, ...axis];
   d3.select('#dropdown-content').html('');
@@ -66,11 +72,51 @@ function updateDropdownOptions(data, ascending) {
       .text(option)
       .on('click', () => {
         currentSort = option;
+        ascending = false;
         d3.select('#dropdown-content').style('display', 'none');
         d3.select('#dropdown-btn').text(getSortLabel(currentSort, ascending));
+        updateRadar(data);
     });
   });
 }
+function updateRadar(data) {
+  
+    const sortedData = [...data];
+  
+    sortedData.sort((a, b) => {
+      let valA, valB;
+  
+      if (currentSort === "Country Name") {
+        valA = a.country.toLowerCase();
+        valB = b.country.toLowerCase();
+        return ascending ? d3.ascending(valA, valB) : d3.descending(valA, valB);
+      }
+  
+      if (currentSort === "Diversity") {
+        const std = values => {
+          const mean = d3.mean(values);
+          return Math.sqrt(d3.mean(values.map(v => Math.pow(v - mean, 2))));
+        };
+        valA = std(a.values.map(d => d.value));
+        valB = std(b.values.map(d => d.value));
+        return ascending ? valA - valB : valB - valA;
+      }
+  
+      // Cas d’un axe
+      const findAxisValue = (d, axisName) => {
+        const match = d.values.find(v => v.axis === axisName);
+        return match ? match.value : 0;
+      };
+  
+      valA = findAxisValue(a, currentSort);
+      valB = findAxisValue(b, currentSort);
+      return ascending ? valA - valB : valB - valA;
+    });
+    const container = d3.select("#graph-3");
+    container.selectAll(".container-radar")
+      .data(sortedData, d => d.country)
+      .order();
+  }
 
  export function drawMultipleRadarCharts(data, isAgeCert) {
     const width = 170, height = 170, padding = 40;
@@ -176,6 +222,7 @@ function updateDropdownOptions(data, ascending) {
           .style("fill", color)
       );
     });
+    updateRadar(data);
  }
 
  function getSortLabel(sortType, ascending) {
