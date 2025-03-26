@@ -4,8 +4,12 @@ export function drawStackedBarChart(data) {
         .attr("width", width)
         .attr("height", height);
   
+    const minYear = d3.min(data, d => d.year);
+    const maxYear = d3.max(data, d => d.year);
+    
+    const allYears = d3.range(minYear, maxYear + 1);
     const x = d3.scaleBand()
-        .domain(data.map(d => d.year))
+        .domain(allYears)
         .range([margin.left, width - margin.right])
         .padding(0.2);
   

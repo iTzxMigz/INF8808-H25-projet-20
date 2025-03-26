@@ -30,8 +30,8 @@ import * as heatmap from './scripts/heatmap.js'
     let radarObject = preproc.preprocessRadarChart(movies, categoriesList);
     let dataRadarChartAge = preproc.prepareRadarChartData(radarObject.radarAgeCert, "ageCert");
     let dataRadarChartCat = preproc.prepareRadarChartData(radarObject.radarCategories, "");
-    radarChart.drawMultipleRadarCharts(dataRadarChartAge, true);
     radarChart.createChangingModeButton(dataRadarChartAge, dataRadarChartCat);
+    radarChart.drawMultipleRadarCharts(dataRadarChartAge, true);
     
   });
 

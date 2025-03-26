@@ -1,34 +1,84 @@
 export function createChangingModeButton(dataRadarChartAge, dataRadarChartCat) {
     let isAgeCertMode = true;
-    d3.select('#viz-container-3')
-       .insert('button', "first-child")
-          .attr('id','radar-toggle-btn')
-          .style('font-size', '16px')
-          .text('Switch to Categories');
-    d3.select("#radar-toggle-btn").on("click", () => {
-       isAgeCertMode = !isAgeCertMode;
- 
-       d3.select("#radar-toggle-btn").text(
-          isAgeCertMode ? "Switch to Categories" : "Switch to Age Ratings"
-       );
-       const data = isAgeCertMode ? dataRadarChartAge : dataRadarChartCat;
-       drawMultipleRadarCharts(data, isAgeCertMode);
+    let currentSort = 'country';
+    let ascending = true;
+    const div = d3.select('#viz-container-3')
+      .insert('div', function() { return this.firstChild; })
+      .style('width', '100%')
+      .style('margin','10px 0px')
+      
+      div.append('button')
+      .attr('id','radar-toggle-btn')
+      .attr('class', 'toolbar-btn')
+      .style('margin-right', '10px')
+      .text('Switch to Categories');
+      
+      const dropdown = div.append('div')
+        .attr('class', 'dropdown')
+        
+      dropdown.append('button')
+        .attr('id', 'dropdown-btn')
+        .attr('class', 'toolbar-btn')
+        .text(getSortLabel(currentSort, ascending))
+        .on('click', function () {
+          ascending = !ascending;
+          d3.select(this).text(getSortLabel(currentSort, ascending));
+        });
+
+    const dropdownContent = dropdown.append('div')
+    .attr('id', 'dropdown-content')
+    .attr('class', 'dropdown-content')
+    .style('display', 'none');
+
+
+    [
+      { label: 'Country Name', value: 'country' },
+      { label: 'Total Value', value: 'total' },
+      { label: 'First Axis', value: 'axis0' }
+    ].forEach(option => {
+      dropdownContent.append('p')
+        .attr('class', 'dropdown-option')
+        .text(option.label)
+        .on('click', () => {
+          currentSort = option.value;
+          // Ferme le menu après sélection
+          d3.select('#dropdown-content').style('display', 'none');
+          d3.select('#dropdown-btn').text(getSortLabel(currentSort, ascending));
+        });
     });
- 
- }
+
+
+    // Toggle menu visibility on click
+    d3.select('.dropdown')
+      .on('mouseenter', () => {
+        d3.select('#dropdown-content').style('display', 'block');
+      })
+      .on('mouseleave', () => {
+        d3.select('#dropdown-content').style('display', 'none');
+      });
+
+        d3.select("#radar-toggle-btn").on("click", () => {
+          isAgeCertMode = !isAgeCertMode;
+    
+          d3.select("#radar-toggle-btn").text(
+              isAgeCertMode ? "Switch to Categories" : "Switch to Age Ratings"
+          );
+          const data = isAgeCertMode ? dataRadarChartAge : dataRadarChartCat;
+          drawMultipleRadarCharts(data, isAgeCertMode);
+        });
+}
 
  export function drawMultipleRadarCharts(data, isAgeCert) {
     const width = 170, height = 170, padding = 40;
     const radius = Math.min(width, height) / 2 - padding;
     const levels = 5;
-    const color = ['#E50914', '#221F1F'];
+    const color = '#E50914';
     const maxValue = 100;
   
     const container = d3.select("#graph-3");
   
     const countryGroups = container.selectAll(".container-radar")
       .data(data, d => d.country);
-    console.log(data);
     // ====== ENTER ======
     const countryEnter = countryGroups.enter()
       .append("div")
@@ -112,14 +162,24 @@ export function createChangingModeButton(dataRadarChartAge, dataRadarChartCat) {
         enter => enter.append("polygon")
           .attr("class", "radar-shape")
           .attr("points", points.map(d => d.join(",")).join(" "))
-          .style("stroke", color[index % 2])
+          .style("stroke", color)
           .style("stroke-width", 2)
-          .style("fill", color[index % 2])
+          .style("fill", color)
           .style("fill-opacity", 0.3),
         update => update.transition().duration(800)
           .attr("points", points.map(d => d.join(",")).join(" "))
-          .style("stroke", color[index % 2])
-          .style("fill", color[index % 2])
+          .style("stroke", color)
+          .style("fill", color)
       );
     });
  }
+
+ function getSortLabel(sortType, ascending) {
+  const labelMap = {
+    country: "Country Name",
+    total: "Total Value",
+    axis0: "First Axis"
+  };
+  const arrow = ascending ? "↑" : "↓";
+  return `Sort by: ${labelMap[sortType]} ${arrow}`;
+}
