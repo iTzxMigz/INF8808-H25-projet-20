@@ -1,6 +1,6 @@
+let currentSort = 'TV Shows & Movies';
 export function createChangingModeButton(dataRadarChartAge, dataRadarChartCat) {
     let isAgeCertMode = true;
-    let currentSort = 'country';
     let ascending = true;
     const div = d3.select('#viz-container-3')
       .insert('div', function() { return this.firstChild; })
@@ -48,8 +48,9 @@ export function createChangingModeButton(dataRadarChartAge, dataRadarChartCat) {
           );
           const data = isAgeCertMode ? dataRadarChartAge : dataRadarChartCat;
           drawMultipleRadarCharts(data, isAgeCertMode);
-          updateDropdownOptions(data, ascending);
+          updateDropdownOptions(data, true);
         });
+    updateDropdownOptions(dataRadarChartAge, ascending);
 }
 
 function updateDropdownOptions(data, ascending) {
@@ -64,7 +65,7 @@ function updateDropdownOptions(data, ascending) {
       .attr('class', 'dropdown-option')
       .text(option)
       .on('click', () => {
-        let currentSort = option;
+        currentSort = option;
         d3.select('#dropdown-content').style('display', 'none');
         d3.select('#dropdown-btn').text(getSortLabel(currentSort, ascending));
     });
