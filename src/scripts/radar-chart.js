@@ -31,23 +31,6 @@ export function createChangingModeButton(dataRadarChartAge, dataRadarChartCat) {
     .style('display', 'none');
 
 
-    [
-      { label: 'Country Name', value: 'country' },
-      { label: 'Total Value', value: 'total' },
-      { label: 'First Axis', value: 'axis0' }
-    ].forEach(option => {
-      dropdownContent.append('p')
-        .attr('class', 'dropdown-option')
-        .text(option.label)
-        .on('click', () => {
-          currentSort = option.value;
-          // Ferme le menu après sélection
-          d3.select('#dropdown-content').style('display', 'none');
-          d3.select('#dropdown-btn').text(getSortLabel(currentSort, ascending));
-        });
-    });
-
-
     // Toggle menu visibility on click
     d3.select('.dropdown')
       .on('mouseenter', () => {
@@ -65,7 +48,27 @@ export function createChangingModeButton(dataRadarChartAge, dataRadarChartCat) {
           );
           const data = isAgeCertMode ? dataRadarChartAge : dataRadarChartCat;
           drawMultipleRadarCharts(data, isAgeCertMode);
+          updateDropdownOptions(data, ascending);
         });
+}
+
+function updateDropdownOptions(data, ascending) {
+  const staticSorting = ["Country Name", "Diversity", "TV Shows & Movies"];
+  let axis = data[0].values.map(d => d.axis);
+  const allOptions = [...staticSorting, ...axis];
+  d3.select('#dropdown-content').html('');
+
+  allOptions.forEach(option => {
+    d3.select('#dropdown-content')
+      .append('p')
+      .attr('class', 'dropdown-option')
+      .text(option)
+      .on('click', () => {
+        let currentSort = option;
+        d3.select('#dropdown-content').style('display', 'none');
+        d3.select('#dropdown-btn').text(getSortLabel(currentSort, ascending));
+    });
+  });
 }
 
  export function drawMultipleRadarCharts(data, isAgeCert) {
@@ -175,11 +178,6 @@ export function createChangingModeButton(dataRadarChartAge, dataRadarChartCat) {
  }
 
  function getSortLabel(sortType, ascending) {
-  const labelMap = {
-    country: "Country Name",
-    total: "Total Value",
-    axis0: "First Axis"
-  };
   const arrow = ascending ? "↑" : "↓";
-  return `Sort by: ${labelMap[sortType]} ${arrow}`;
+  return `Sort by: ${sortType} ${arrow}`;
 }
