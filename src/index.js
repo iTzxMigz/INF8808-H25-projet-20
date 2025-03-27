@@ -31,8 +31,8 @@ import * as geomap from './scripts/geomap.js'
     let radarObject = preproc.preprocessRadarChart(movies, categoriesList);
     let dataRadarChartAge = preproc.prepareRadarChartData(radarObject.radarAgeCert, "ageCert");
     let dataRadarChartCat = preproc.prepareRadarChartData(radarObject.radarCategories, "");
-    radarChart.drawMultipleRadarCharts(dataRadarChartAge, true);
     radarChart.createChangingModeButton(dataRadarChartAge, dataRadarChartCat);
+    radarChart.drawMultipleRadarCharts(dataRadarChartAge, true);
     geomap.drawGeomap(movies);
   });
 
