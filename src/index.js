@@ -4,6 +4,7 @@ import * as preproc from './scripts/preprocess.js'
 import * as radarChart from './scripts/radar-chart.js'
 import * as stackBarChart from './scripts/stack-barchart.js'
 import * as heatmap from './scripts/heatmap.js'
+import * as geomap from './scripts/geomap.js'
 
 /**
  * @file This file is the entry-point for the the code for TP3 for the course INF8808.
@@ -32,7 +33,7 @@ import * as heatmap from './scripts/heatmap.js'
     let dataRadarChartCat = preproc.prepareRadarChartData(radarObject.radarCategories, "");
     radarChart.drawMultipleRadarCharts(dataRadarChartAge, true);
     radarChart.createChangingModeButton(dataRadarChartAge, dataRadarChartCat);
-    
+    geomap.drawGeomap(movies);
   });
 
 

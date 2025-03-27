@@ -119,3 +119,35 @@ button:hover, button:active {
   .axis path {
       opacity: 0;
   }
+
+  tr.highlight {
+    font-weight: bolder;
+  }
+  
+  #country-table {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(100, 100, 100, 0.4) transparent;
+    position: relative;
+  }
+  
+ #graph-4 #country-table::-webkit-scrollbar {
+  width: 8px !important;
+}
+
+#graph-4 #country-table::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+#graph-4 #country-table::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 100, 100, 0.4) !important;
+  border-radius: 9999px !important; /* Fully rounded */
+  border: 2px solid transparent !important;
+  background-clip: content-box !important;
+}
+
+#graph-4 #country-table::-webkit-scrollbar-button {
+  display: none !important;
+  height: 0 !important;
+  width: 0 !important;
+}
+
