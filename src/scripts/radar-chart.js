@@ -77,7 +77,6 @@ function updateDropdownOptions(data) {
     });
 }
 function updateRadar(data) {
-  
     const sortedData = [...data];
     sortedData.sort((a, b) => {
         let valA, valB;

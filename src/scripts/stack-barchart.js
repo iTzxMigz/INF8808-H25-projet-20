@@ -1,9 +1,8 @@
 export function drawStackedBarChart(data) {
-    const width = 1300, height = 500, margin = { top: 50, right: 200, bottom: 50, left: 70 };
+    const width = 1300, height = 500, margin = { top: 50, right: 50, bottom: 50, left: 70 };
     const svg = d3.select("#graph-1").append("svg")
         .attr("width", width)
         .attr("height", height);
-  
     const minYear = d3.min(data, d => d.year);
     const maxYear = d3.max(data, d => d.year);
     
@@ -70,7 +69,7 @@ function addLegend(svg, width, margin, color) {
         "TVShows": "TV Shows"
       };
     const legend = svg.append("g")
-    .attr("transform", `translate(${width -200},${margin.top})`);
+    .attr("transform", `translate(${width - 100},${margin.top})`);
 
     legend.selectAll("rect")
         .data(color.domain())
