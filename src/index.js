@@ -50,5 +50,3 @@ function drawShape(numberOfGraph) {
          .attr("id", `graph-${i + 1}`)
    }
 }
-
-
