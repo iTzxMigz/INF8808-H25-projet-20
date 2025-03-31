@@ -1,4 +1,4 @@
-export function drawHeatmap(data, categoryPercentages) {
+export function drawHeatmap(data) {
     const width = 1200, height = 500, margin = { top: 50, right: 30, bottom: 50, left: 300 };
     
     const svg = d3.select("#graph-2").append("svg")
@@ -16,7 +16,23 @@ export function drawHeatmap(data, categoryPercentages) {
                 .padding(0.05);
   
     const colorScale = d3.scaleSequential(d3.interpolateReds)
-                         .domain([0, d3.max(data, d => d.count)]);
+                         .domain([0, 100]);
+
+                         const tooltip = d3.select("body")
+                         .append("div")
+                         .style("position", "absolute")
+                         .style("background", "#141414")
+                         .style("color", "#fff")
+                         .style("border", "3px solid #e50914")
+                         .style("padding", "12px 16px")
+                         .style("border-radius", "4px")
+                         .style("box-shadow", "0 2px 8px rgba(0,0,0,0.8)")
+                         .style("font-family", "'Helvetica Neue', Helvetica, Arial, sans-serif")
+                         .style("font-size", "14px")
+                         .style("pointer-events", "none")
+                         .style("opacity", 0)
+                         .style("z-index", 10)
+                         .style("transition", "opacity 0.2s ease");
   
     svg.selectAll("rect")
     .data(data)
@@ -27,54 +43,34 @@ export function drawHeatmap(data, categoryPercentages) {
     })
     .attr("width", x.bandwidth())
     .attr("height", y.bandwidth()) // Ensure y.bandwidth() exists
-    .attr("fill", d => colorScale(d.count))
+    .attr("fill", d => colorScale(d.percentage))
     .attr("class", "heatmap-cell")
-    .on("click", function(event, d) {
-      svg.selectAll(".highlight-row").remove();
-  
-      // Get the y position of the selected category
-      let yPos = y(d.category);
-      let rowHeight = y.bandwidth();
-      
-  
-      svg.selectAll(".tick text") // Select all Y-axis labels
-     .style("font-weight", "normal") // Reset all to normal
-     .style("fill", "black"); // Reset color in case it's modified
-      // Add a background rectangle for the entire row
-      svg.selectAll(".tick text")
-     .filter(text => text === d.category) // Find the matching category
-     .style("font-weight", "bold")
-     .style("fill", "black");
-  
-      svg.append("rect")
-         .attr("class", "highlight-row")
-         .attr("x", margin.left) // Start at the beginning of the heatmap
-         .attr("y", yPos)
-         .attr("width", width - margin.left - margin.right - 5)
-         .attr("height", rowHeight)
-         .attr("fill", "none") // No fill, just a border
-         .attr("stroke", "black") // Highlight color
-         .attr("stroke-width", 5)
-     
-  
-         let category = d.category;
-         let categoryData = categoryPercentages.get(category);
-  
-         // Update the bar chart
-         if (categoryData) {
-             drawBarChart(category, categoryData);
-         }
-    });
-  
-    //Title
-    svg.append("text")
-     .attr("x", margin.left + (width - margin.left - margin.right) / 2) // Center the title
-     .attr("y", margin.top / 2) // Position slightly above the heatmap
-     .attr("text-anchor", "middle") // Ensure the text is centered
-     .text("Netflix's Top 10 Content Categories Over Time (2009-2021)") // Customize this title!
-     .attr("font-family", "'Bebas Neue', sans-serif") // Netflix-like font
-     .attr("font-size", "30px") // Large, readable text
-     .attr("fill", "black") // Text color
+    .on("mouseover", function(event, d) {
+      d3.select(this)
+         .style("stroke", "black")
+         .style("stroke-width", 2);
+      tooltip.transition().duration(100).style("opacity", 0.9);
+      tooltip.html(`
+         Year: ${d.year}<br>
+         Category: ${d.category}<br>
+         Count: ${d.count} titles<br>
+         Total: ${d.total} titles<br>
+         Percentage: ${(d.percentage).toFixed(1)}%
+       `)
+      .style("left", (event.pageX + 10) + "px")
+      .style("top", (event.pageY - 28) + "px")
+      .style('font-family', 'Bebas Neue')
+      .style('font-size', '18px');;
+   })
+   .on("mousemove", function(event) {
+         tooltip.style("left", (event.pageX + 10) + "px")
+            .style("top", (event.pageY - 28) + "px");
+   })
+   .on("mouseout", function(event, d) {
+         d3.select(this)
+         .style("stroke", "none");
+         tooltip.transition().duration(50).style("opacity", 0);
+   });
   
     // Axes
     svg.append("g")
@@ -142,7 +138,7 @@ export function drawHeatmap(data, categoryPercentages) {
         .attr("x", margin.left - legendOffset + legendWidth/2)
         .attr("y", margin.top - 20)
         .attr("text-anchor", "middle")
-        .text("Number of Movies & TV Shows")
+        .text("Proportion of Movies & TV Shows")
         .attr("font-family", "'Bebas Neue', sans-serif")
         .attr("font-size", "16px")
         .attr("fill", "black")

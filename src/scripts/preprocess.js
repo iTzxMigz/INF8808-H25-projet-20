@@ -114,9 +114,10 @@ export function getFilterMoviesSeriesByYear(movies) {
   
 }
 
-export function processCategoriesForHeatmap(data) {
+export function processCategoriesForHeatmap(data, numberPerYear) {
   let categoryMap = new Map();
   let allYears = d3.range(2009, 2022);
+  console.log(numberPerYear);
   
 
   data.forEach(d => {
@@ -144,48 +145,20 @@ export function processCategoriesForHeatmap(data) {
   let heatmapData = [];
   sortedCategories.forEach(({ category, values }) => {
     allYears.forEach(year => {
+      const yearString = year.toString();
+      const total = numberPerYear.get(yearString)? 
+      numberPerYear.get(yearString).Movies + numberPerYear.get(yearString).TVShows: 0;
       heatmapData.push({
         year: year,
         category: category,
-        count: values.get(year) || 0 // Met 0 si aucune donnée pour cette année
+        count: values.get(year) || 0,
+        total: total,
+        percentage: total!== 0? ((values.get(year) || 0) / total * 100) : 0
       });
     });
   });
+  console.log(heatmapData);
   return { heatmapData, sortedCategories: sortedCategories.map((c) => c.category) };
-}
-
-export function processCategoryPercentage(data) {
-  let yearlyTotals = new Map();
-  let categoryYearlyCounts = new Map();
-  // Compter le total des ajouts par année et par catégorie
-  data.forEach(d => {
-    let year = d.year;
-    let category = d.category;
-    let count = d.count;
-
-    // Stocker le total de chaque année
-    yearlyTotals.set(year, (yearlyTotals.get(year) || 0) + count);
-
-    // Stocker le total par catégorie et année
-    if (!categoryYearlyCounts.has(category)) {
-      categoryYearlyCounts.set(category, new Map());
-    }
-    categoryYearlyCounts.get(category).set(year, count);
-  });
-
-  // Calculer le pourcentage
-  let percentageData = new Map();
-  categoryYearlyCounts.forEach((yearMap, category) => {
-    let percentages = [];
-    yearMap.forEach((count, year) => {
-      let total = yearlyTotals.get(year);
-      let percentage = (count / total) * 100;
-      percentages.push({ year: +year, percentage });
-    });
-    percentageData.set(category, percentages);
-  });
-
-  return percentageData;
 }
 
 export function preprocessRadarChart(data, categoriesList) {

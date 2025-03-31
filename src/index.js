@@ -23,11 +23,10 @@ import * as geomap from './scripts/geomap.js'
     })).sort((a, b) => a.year - b.year);
     drawShape(6);
     stackBarChart.drawStackedBarChart(chartData);
-    let resultHeatmap = preproc.processCategoriesForHeatmap(movies);
+    let resultHeatmap = preproc.processCategoriesForHeatmap(movies, filterMoviesSeriesByYear);
     let heatmapData = resultHeatmap.heatmapData
     let categoriesList = resultHeatmap.sortedCategories
-    let percentageData = preproc.processCategoryPercentage(heatmapData);
-    heatmap.drawHeatmap(heatmapData, percentageData);
+    heatmap.drawHeatmap(heatmapData);
     let radarObject = preproc.preprocessRadarChart(movies, categoriesList);
     let dataRadarChartAge = preproc.prepareRadarChartData(radarObject.radarAgeCert, "ageCert");
     let dataRadarChartCat = preproc.prepareRadarChartData(radarObject.radarCategories, "");
