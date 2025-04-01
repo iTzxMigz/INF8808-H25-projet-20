@@ -91,9 +91,9 @@ export function drawGeomap(data) {
 		.attr('fill', '#ccc')
 		.attr('stroke', '#333');
 
-	const radiusScale = d3.scaleSqrt()
+	const areaScale = d3.scaleLinear()
 		.domain([0, d3.max(Object.values(countryCounts))])
-		.range([0, Math.sqrt(20)]);
+		.range([0, 3000]);
 
 	svg.append('g')
 		.selectAll('circle')
@@ -107,7 +107,10 @@ export function drawGeomap(data) {
 			const centroid = countryCentroids[d[0]];
 			return centroid ? projection(centroid)[1] : 0;
 		})
-		.attr('r', d => radiusScale(d[1]) * 8)
+		.attr('r', d => {
+			const area = areaScale(d[1]);
+    		return Math.sqrt(area / Math.PI);
+		})
 		.attr('fill', d => colorScale(countryAverages[d[0]]))
 
 		.attr('stroke', '#000')
@@ -131,7 +134,7 @@ export function drawGeomap(data) {
 	  
 		  tooltip.transition().duration(100).style("opacity", 0.9);
 		  tooltip.html(`
-			<strong>${name}</strong><br>
+			<u>${name}</u><br>
 			Total titles: ${countryCounts[name]}<br>
 			Avg IMDb: ${countryAverages[name].toFixed(2)}
 		  `)

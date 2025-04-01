@@ -58,7 +58,8 @@ let titlesByViz = {
   "viz-container-1": "Movies and Series added to Netflix by year",
   "viz-container-2": "Distribution of Categories per year on Netflix",
   "viz-container-3": () => radarChart.isAgeCertMode? radarChart.titleAgerCert : radarChart.titleCategories,
-  "viz-container-4": "C'est le temps de WAKE UP!!!",
+  "viz-container-4": "Content Production and IMDb Scores by Country on Netflix",
+  "viz-container-5": "C'est le temps de WAKE UP!!!",
   // ajoute d'autres si tu veux
 };
 

@@ -1,8 +1,8 @@
 let currentSort = 'Country Name';
 let ascending = false;
 export let isAgeCertMode = true;
-export const titleAgerCert = "Distribution of Age Ratings by Country";
-export const titleCategories = "Distribution of Categories by Country";
+export const titleAgerCert = "Distribution of Age Ratings by Country on Netflix";
+export const titleCategories = "Distribution of Categories by Country on Netflix";
 
 export function createChangingModeButton(dataRadarChartAge, dataRadarChartCat) {
     let data = dataRadarChartAge;
