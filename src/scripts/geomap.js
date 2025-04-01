@@ -10,160 +10,197 @@ const height = 600;
 
 // Country name discrepancies
 const countryNameMapping = {
-  "United States of America": "United States",
-  "Czechia": "Czech Republic",
-  "Singapore": "Singapore"
+	"United States of America": "United States",
+	"Czechia": "Czech Republic",
+	"Singapore": "Singapore"
 };
 
 export function drawGeomap(data) {
-  // When appending the flex container
-  const container = d3.select("#graph-4")
-    .append("div")
-    .attr("class", "geomap-container")
-    .style("display", "flex")
-    .style("gap", "20px")
-    .style("justify-content", "space-between")
-    .style("align-items", "flex-start");
-  
-  const svg = container.append("svg")
-    .attr("width", width)
-    .attr("height", height);
-    
-  const projection = geoRobinson()
-    .scale(150)
-    .translate([width / 2, height / 1.5]);
+// When appending the flex container
+	const tooltip = d3.select("body")
+		.append("div")
+		.style("position", "absolute")
+		.style("background", "#141414")
+		.style("color", "#fff")
+		.style("border", "3px solid #e50914")
+		.style("padding", "12px 16px")
+		.style("border-radius", "4px")
+		.style("box-shadow", "0 2px 8px rgba(0,0,0,0.8)")
+		.style("font-family", "'Helvetica Neue', Helvetica, Arial, sans-serif")
+		.style("font-size", "14px")
+		.style("pointer-events", "none")
+		.style("opacity", 0)
+		.style("z-index", 10)
+		.style("transition", "opacity 0.2s ease");
 
-  const path = d3.geoPath().projection(projection);
+	const container = d3.select("#graph-4")
+		.append("div")
+		.attr("class", "geomap-container")
+		.style("display", "flex")
+		.style("gap", "20px")
+		.style("justify-content", "space-between")
+		.style("align-items", "flex-start");
 
-  // Process the data
-  const countryCounts = {};
-  const countryScores = {};
+	const svg = container.append("svg")
+		.attr("width", width)
+		.attr("height", height);
 
-  data.forEach(d => {
-    const country = d.Country?.trim() || 'EMPTY';
-    const score = parseFloat(d.Score);
+	const projection = geoRobinson()
+		.scale(150)
+		.translate([width / 2, height / 1.5]);
 
-    if (country && country !== 'Not Given') {
-      if (!countryCounts[country]) {
-        countryCounts[country] = 0;
-        countryScores[country] = 0;
-      }
-      countryCounts[country]++;
-      countryScores[country] += score;
-    }
-  });
+	const path = d3.geoPath().projection(projection);
 
-  const countryAverages = {};
-  for (const country in countryScores) {
-    countryAverages[country] = countryScores[country] / countryCounts[country];
-  }
+	// Process the data
+	const countryCounts = {};
+	const countryScores = {};
 
-  // Load and draw map
-  d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json').then(world => {
-    const countries = topojson.feature(world, world.objects.countries).features;
+	data.forEach(d => {
+	const country = d.Country?.trim() || 'EMPTY';
+	const score = parseFloat(d.Score);
 
-    const countryPaths = svg.append('g')
-      .selectAll('path')
-      .data(countries)
-      .enter().append('path')
-      .attr('d', path)
-      .attr('fill', '#ccc')
-      .attr('stroke', '#333');
+	if (country && country !== 'Not Given') {
+		if (!countryCounts[country]) {
+		countryCounts[country] = 0;
+		countryScores[country] = 0;
+		}
+		countryCounts[country]++;
+		countryScores[country] += score;
+	}
+	});
 
-    const radiusScale = d3.scaleSqrt()
-      .domain([0, d3.max(Object.values(countryCounts))])
-      .range([0, Math.sqrt(20)]);
+	const countryAverages = {};
+	for (const country in countryScores) {
+		countryAverages[country] = countryScores[country] / countryCounts[country];
+	}
 
-    svg.append('g')
-      .selectAll('circle')
-      .data(Object.entries(countryCounts))
-      .enter().append('circle')
-      .attr('cx', d => {
-        const centroid = countryCentroids[d[0]];
-        return centroid ? projection(centroid)[0] : 0;
-      })
-      .attr('cy', d => {
-        const centroid = countryCentroids[d[0]];
-        return centroid ? projection(centroid)[1] : 0;
-      })
-      .attr('r', d => radiusScale(d[1]) * 8)
-      .attr('fill', 'rgba(229, 9, 20, 1)')
-      .attr('stroke', '#000')
-      .style('pointer-events', 'none');
+	const scoreExtent = d3.extent(Object.values(countryAverages));
+	const colorScale = d3.scaleSequential(d3.interpolateReds)
+						.domain([4,8])
+						.clamp(true);
 
-    countryPaths
-      .filter(d => {
-        const name = countryNameMapping[d.properties.name] || d.properties.name;
-        return countryCounts[name] !== undefined;
-      })
+	// Load and draw map
+	d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json').then(world => {
+	const countries = topojson.feature(world, world.objects.countries).features;
 
-      .on('mouseover', function (event, d) {
-        d3.selectAll('path').attr('fill', '#ccc').attr('opacity', 0.5);
-        d3.select(this).attr('fill', '#666').attr('opacity', 1);
-      
-        const countryName = countryNameMapping[d.properties.name] || d.properties.name;
-      
-        // Move hovered country to the top
-        const reordered = [
-          [countryName, countryCounts[countryName]],
-          ...originalSortedCountries.filter(([c]) => c !== countryName)
-        ];
-      
-        renderCountryTable(reordered, countryName);
-      })
+	const countryPaths = svg.append('g')
+		.selectAll('path')
+		.data(countries)
+		.enter().append('path')
+		.attr('d', path)
+		.attr('fill', '#ccc')
+		.attr('stroke', '#333');
 
-      .on('mouseout', function () {
-        d3.selectAll('path').attr('fill', '#ccc').attr('opacity', 1);
-        renderCountryTable(originalSortedCountries);
-      });
+	const radiusScale = d3.scaleSqrt()
+		.domain([0, d3.max(Object.values(countryCounts))])
+		.range([0, Math.sqrt(20)]);
 
-      
-    function renderCountryTable(sortedCountries, highlightCountry = null) {
-      const tbody = d3.select("#country-table-body");
-      tbody.selectAll("tr").remove();
-    
-      sortedCountries.forEach(([country, count]) => {
-        const row = tbody.append("tr")
-          .attr("data-country", country)
-          .classed("highlight", country === highlightCountry);
-        row.append("td").text(country);
-        row.append("td").text(count);
-        row.append("td").text(countryAverages[country].toFixed(2));
-      });
-    }
+	svg.append('g')
+		.selectAll('circle')
+		.data(Object.entries(countryCounts))
+		.enter().append('circle')
+		.attr('cx', d => {
+			const centroid = countryCentroids[d[0]];
+			return centroid ? projection(centroid)[0] : 0;
+		})
+		.attr('cy', d => {
+			const centroid = countryCentroids[d[0]];
+			return centroid ? projection(centroid)[1] : 0;
+		})
+		.attr('r', d => radiusScale(d[1]) * 8)
+		.attr('fill', d => colorScale(countryAverages[d[0]]))
 
-    const tableContainer = container.append("div")
-      .attr("class", "table")
-      .attr("id", "country-table")
-      .style("height", "600px")
-      .style("overflow-y", "scroll")
-      .style("flex", "1");
-    
+		.attr('stroke', '#000')
+		.style('pointer-events', 'none');
 
-    const table = tableContainer.append("table");
+	countryPaths
+		.filter(d => {
+		  const name = countryNameMapping[d.properties.name] || d.properties.name;
+		  return countryCounts[name] !== undefined;
+		})
+		.on('mouseover', function (event, d) {
+		  const name = countryNameMapping[d.properties.name] || d.properties.name;
+	  
+		  d3.selectAll('path').attr('fill', '#ccc').attr('opacity', 0.5);
+		  d3.select(this).attr('fill', '#666').attr('opacity', 1)
+						 .style("stroke", "black")
+						 .style("stroke-width", 2);
+	  
+		  d3.selectAll('tr').classed('highlight', false);
+		  d3.select(`tr[data-country="${name}"]`).classed('highlight', true);
+	  
+		  tooltip.transition().duration(100).style("opacity", 0.9);
+		  tooltip.html(`
+			<strong>${name}</strong><br>
+			Total titles: ${countryCounts[name]}<br>
+			Avg IMDb: ${countryAverages[name].toFixed(2)}
+		  `)
+		  .style("left", (event.pageX + 10) + "px")
+		  .style("top", (event.pageY - 28) + "px")
+		  .style('font-family', 'Bebas Neue')
+		  .style('font-size', '18px');
+		})
+		.on("mousemove", function (event) {
+		  tooltip
+			.style("left", (event.pageX + 10) + "px")
+			.style("top", (event.pageY - 28) + "px");
+		})
+		.on('mouseout', function () {
+		  d3.selectAll('path').attr('fill', '#ccc').attr('opacity', 1)
+							  .style("stroke", "none");
+	  
+		  d3.selectAll('tr').classed('highlight', false);
+	  
+		  tooltip.transition().duration(100).style("opacity", 0);
+		});
 
-    // Header
-    const thead = table.append("thead");
-    thead.append("tr")
-      .selectAll("th")
-      .data(["Country", "Total Movies", "Average IMDB Score"])
-      .enter()
-      .append("th")
-      .text(d => d);
+		
+	function renderCountryTable(sortedCountries, highlightCountry = null) {
+		const tbody = d3.select("#country-table-body");
+		tbody.selectAll("tr").remove();
 
-    // Body
-    const tbody = table.append("tbody").attr("id", "country-table-body");
+		sortedCountries.forEach(([country, count]) => {
+		const row = tbody.append("tr")
+			.attr("data-country", country)
+			.classed("highlight", country === highlightCountry);
+		row.append("td").text(country);
+		row.append("td").text(count);
+		row.append("td").text(countryAverages[country].toFixed(2));
+		});
+	}
 
-    const sortedCountries = Object.entries(countryCounts).sort((a, b) => b[1] - a[1]);
+	const tableContainer = container.append("div")
+		.attr("class", "table")
+		.attr("id", "country-table")
+		.style("height", "600px")
+		.style("overflow-y", "scroll")
+		.style("flex", "1");
 
-    const originalSortedCountries = [...sortedCountries];
-    renderCountryTable(originalSortedCountries);
 
-    sortedCountries.forEach(([country, count]) => {
-      const row = tbody.append("tr").attr("data-country", country);
-      row.append("td").text(country);
-      row.append("td").text(count);
-      row.append("td").text(countryAverages[country].toFixed(2));
-    });
-  });
+	const table = tableContainer.append("table");
+
+	// Header
+	const thead = table.append("thead");
+	thead.append("tr")
+		.selectAll("th")
+		.data(["Country", "Total Movies", "Average IMDB Score"])
+		.enter()
+		.append("th")
+		.text(d => d);
+
+	// Body
+	const tbody = table.append("tbody").attr("id", "country-table-body");
+
+	const sortedCountries = Object.entries(countryCounts).sort((a, b) => b[1] - a[1]);
+
+	const originalSortedCountries = [...sortedCountries];
+	renderCountryTable(originalSortedCountries);
+
+	sortedCountries.forEach(([country, count]) => {
+		const row = tbody.append("tr").attr("data-country", country);
+		row.append("td").text(country);
+		row.append("td").text(count);
+		row.append("td").text(countryAverages[country].toFixed(2));
+	});
+	});
 }
