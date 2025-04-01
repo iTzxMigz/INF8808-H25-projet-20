@@ -76,7 +76,7 @@ export function drawGeomap(data) {
 
 	const scoreExtent = d3.extent(Object.values(countryAverages));
 	const colorScale = d3.scaleSequential(d3.interpolateReds)
-						.domain([4,8])
+						.domain(scoreExtent)
 						.clamp(true);
 
 	// Load and draw map
