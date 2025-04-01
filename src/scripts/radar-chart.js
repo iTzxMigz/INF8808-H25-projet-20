@@ -1,7 +1,10 @@
 let currentSort = 'Country Name';
 let ascending = false;
+export let isAgeCertMode = true;
+export const titleAgerCert = "Distribution of Age Ratings by Country";
+export const titleCategories = "Distribution of Categories by Country";
+
 export function createChangingModeButton(dataRadarChartAge, dataRadarChartCat) {
-    let isAgeCertMode = true;
     let data = dataRadarChartAge;
     const div = d3.select('#viz-container-3')
         .insert('div', function() { return this.firstChild; })
@@ -43,6 +46,7 @@ export function createChangingModeButton(dataRadarChartAge, dataRadarChartCat) {
 
     d3.select("#radar-toggle-btn").on("click", () => {
         isAgeCertMode = !isAgeCertMode;
+        d3.select('header h1').text(isAgeCertMode? titleAgerCert: titleCategories);
         d3.select("#radar-toggle-btn").text(
             isAgeCertMode ? "Switch to Categories" : "Switch to Age Ratings"
         );

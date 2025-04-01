@@ -33,6 +33,7 @@ import * as geomap from './scripts/geomap.js'
     radarChart.createChangingModeButton(dataRadarChartAge, dataRadarChartCat);
     radarChart.drawMultipleRadarCharts(dataRadarChartAge, true);
     geomap.drawGeomap(movies);
+    changingTitleDynamically();
   });
 
 
@@ -48,4 +49,34 @@ function drawShape(numberOfGraph) {
          .attr("class", "graph")
          .attr("id", `graph-${i + 1}`)
    }
+}
+
+function changingTitleDynamically() {
+  const headerTitle = d3.select("header h1");
+
+let titlesByViz = {
+  "viz-container-1": "Movies and Series added to Netflix by year",
+  "viz-container-2": "Distribution of Categories per year on Netflix",
+  "viz-container-3": () => radarChart.isAgeCertMode? radarChart.titleAgerCert : radarChart.titleCategories,
+  "viz-container-4": "C'est le temps de WAKE UP!!!",
+  // ajoute d'autres si tu veux
+};
+
+window.addEventListener("scroll", () => {
+  d3.selectAll(".viz-container").each(function() {
+    const rect = this.getBoundingClientRect();
+    const height = window.innerHeight
+
+    if (rect.top < height / 4 && rect.bottom > height - height / 4) {
+      const id = this.id;
+      const title = typeof titlesByViz[id] === "function"
+      ? titlesByViz[id]()
+      : titlesByViz[id];
+      if (title) {
+        headerTitle.text(title);
+      }
+    }
+  });
+});
+
 }
