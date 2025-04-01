@@ -1,10 +1,3 @@
-/**
- * Gets the names of the neighborhoods.
- *
- * @param {object[]} data The data to analyze
- * @returns {string[]} The names of the neighorhoods in the data set
- */
-
 export function getMoviesAndSeries (data) {
   let map_filter = new Map();
   let data_filter = data.map((d)=> {
@@ -99,7 +92,7 @@ function mergeListedIn(categorie) {
 
 export function getFilterMoviesSeriesByYear(movies) {
   let yearlyCounts = new Map();
-  movies.forEach(m=>{
+  movies.forEach(m => {
     let year = m.DateAdded
     if (!yearlyCounts.has(year)) {
       yearlyCounts.set(year, {year: year, Movies: 0, TVShows: 0 });

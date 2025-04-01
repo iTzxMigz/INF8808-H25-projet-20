@@ -7,8 +7,8 @@ import * as heatmap from './scripts/heatmap.js'
 import * as geomap from './scripts/geomap.js'
 
 /**
- * @file This file is the entry-point for the the code for TP3 for the course INF8808.
- * @author Olivia Gélinas
+ * @file This file is the entry-point for the the code for Projet for the course INF8808.
+ * @author Team Projet 20
  * @version v1.0.0
  */
 
@@ -21,7 +21,7 @@ import * as geomap from './scripts/geomap.js'
       Movies: values.Movies,
       TVShows: values.TVShows
     })).sort((a, b) => a.year - b.year);
-    drawShape(6);
+    drawShape(5);
     stackBarChart.drawStackedBarChart(chartData);
     let resultHeatmap = preproc.processCategoriesForHeatmap(movies, filterMoviesSeriesByYear);
     let heatmapData = resultHeatmap.heatmapData
