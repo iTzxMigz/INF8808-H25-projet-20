@@ -258,3 +258,40 @@ export function prepareRadarChartData(radarData, type) {
     };
   });
 }
+
+export function prepareStackedDotPlotData(data) {
+  const categoryCounts = {};
+  data.forEach((d) => {
+      d.listed_in
+          .map((s) => s.trim())
+          .map(mergeListedIn)
+          .forEach((category) => {
+              categoryCounts[category] = (categoryCounts[category] || 0) + 1;
+          });
+  });
+
+  const topCategories = Object.entries(categoryCounts)
+      .sort(([, countA], [, countB]) => countB - countA)
+      .slice(0, 10)
+      .map(([category]) => category);
+
+  data.forEach((d) => {
+      const mergedCategories = d.listed_in
+          .map((s) => s.trim())
+          .map(mergeListedIn);
+      const primaryCategory = mergedCategories[0];
+      if (!topCategories.includes(primaryCategory)) {
+          d.listed_in = 'Other';
+      } else {
+          d.listed_in = primaryCategory;
+      }
+  });
+
+  const categories = [...topCategories, 'Other'];
+  //const categories = topCategories;
+
+  return {
+    categories: categories,
+    data: data
+  };
+}
