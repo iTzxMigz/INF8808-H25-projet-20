@@ -64,8 +64,9 @@ export function drawStackedDotPlot(topCategories, mergedData) {
     }
 
     topCategories.forEach((category, idx) => {
-        const filteredMovies = mergedData.filter(d => d.listed_in === category);
-
+        let filteredMovies = mergedData.filter(d => d.listed_in === category);
+        filteredMovies.sort((a, b) => a.type_x.localeCompare(b.type_x));
+        
         const categoryGroup = svg.append("g")
             .attr("transform", `translate(0, ${idx * (height + margin)})`);
 
