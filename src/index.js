@@ -35,7 +35,7 @@ import * as stackDotPlot from './scripts/stacked-dot-plot.js'
     radarChart.createChangingModeButton(dataRadarChartAge, dataRadarChartCat);
     radarChart.drawMultipleRadarCharts(dataRadarChartAge, true);
     geomap.drawGeomap(movies);
-    stackDotPlot.drawStackedDotPlot(dataStackedDotPlot.categories, dataStackedDotPlot.data);
+    stackDotPlot.initDropdownAndPlot(dataStackedDotPlot.categories, dataStackedDotPlot.data);
     changingTitleDynamically();
   });
 
@@ -62,7 +62,7 @@ let titlesByViz = {
   "viz-container-2": "Distribution of Categories per year on Netflix",
   "viz-container-3": () => radarChart.isAgeCertMode? radarChart.titleAgerCert : radarChart.titleCategories,
   "viz-container-4": "Content Production and IMDb Scores by Country on Netflix",
-  "viz-container-5": "IMDB Scores by top categories",
+  "viz-container-5": () => stackDotPlot.isIMDB? stackDotPlot.titleIMDB : stackDotPlot.titleAge,
   // ajoute d'autres si tu veux
 };
 
