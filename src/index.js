@@ -5,6 +5,7 @@ import * as radarChart from './scripts/radar-chart.js'
 import * as stackBarChart from './scripts/stack-barchart.js'
 import * as heatmap from './scripts/heatmap.js'
 import * as geomap from './scripts/geomap.js'
+import * as stackDotPlot from './scripts/stacked-dot-plot.js'
 
 /**
  * @file This file is the entry-point for the the code for Projet for the course INF8808.
@@ -26,6 +27,7 @@ import * as geomap from './scripts/geomap.js'
     let resultHeatmap = preproc.processCategoriesForHeatmap(movies, filterMoviesSeriesByYear);
     let heatmapData = resultHeatmap.heatmapData
     let categoriesList = resultHeatmap.sortedCategories
+    let dataStackedDotPlot = preproc.prepareStackedDotPlotData(data);
     heatmap.drawHeatmap(heatmapData);
     let radarObject = preproc.preprocessRadarChart(movies, categoriesList);
     let dataRadarChartAge = preproc.prepareRadarChartData(radarObject.radarAgeCert, "ageCert");
@@ -33,6 +35,7 @@ import * as geomap from './scripts/geomap.js'
     radarChart.createChangingModeButton(dataRadarChartAge, dataRadarChartCat);
     radarChart.drawMultipleRadarCharts(dataRadarChartAge, true);
     geomap.drawGeomap(movies);
+    stackDotPlot.drawStackedDotPlot(dataStackedDotPlot.categories, dataStackedDotPlot.data);
     changingTitleDynamically();
   });
 
@@ -59,7 +62,7 @@ let titlesByViz = {
   "viz-container-2": "Distribution of Categories per year on Netflix",
   "viz-container-3": () => radarChart.isAgeCertMode? radarChart.titleAgerCert : radarChart.titleCategories,
   "viz-container-4": "Content Production and IMDb Scores by Country on Netflix",
-  "viz-container-5": "C'est le temps de WAKE UP!!!",
+  "viz-container-5": "IMDB Scores by top categories",
   // ajoute d'autres si tu veux
 };
 
