@@ -66,7 +66,7 @@ export function drawStackedDotPlot(topCategories, mergedData) {
     topCategories.forEach((category, idx) => {
         let filteredMovies = mergedData.filter(d => d.listed_in === category);
         filteredMovies.sort((a, b) => a.type_x.localeCompare(b.type_x));
-        
+
         const categoryGroup = svg.append("g")
             .attr("transform", `translate(0, ${idx * (height + margin)})`);
 
@@ -78,15 +78,21 @@ export function drawStackedDotPlot(topCategories, mergedData) {
             .attr("cy", d => height - margin - radius - d.y)
             .attr("r", radius)
             .attr("fill", (d) => d.data.type_x === 'Movie' ? '#E50914' : '#221F1F')
-            .on("mouseover", function(event, d) { // Show tooltip on hover
+            .on("mouseover", function(event, d) { 
+                d3.selectAll("circle").style("opacity", 0.3); 
+                d3.select(this)
+                    .style("opacity", 1)
+                    .attr("stroke", "#000");
                 tooltip.transition().duration(100).style("opacity", 0.9);
                 tooltip.html(`Name: ${d.data.title}<br>Type: ${d.data.type_x}<br>IMDb Score: ${d.data.imdb_score}`);
             })
-            .on("mousemove", function(event) { // Position the tooltip
+            .on("mousemove", function(event) {
                 tooltip.style("top", (event.pageY + 10) + "px")
                     .style("left", (event.pageX + 10) + "px");
             })
-            .on("mouseout", function() { // Hide tooltip when mouse leaves
+            .on("mouseout", function() { 
+                d3.selectAll("circle").style("opacity", 1);
+                d3.select(this).attr("stroke", "none");
                 tooltip.transition().duration(100).style("opacity", 0);
             })
 
