@@ -287,8 +287,7 @@ export function prepareStackedDotPlotData(data) {
       }
   });
 
-  const categories = [...topCategories, 'Other'];
-  //const categories = topCategories;
+  const categories = topCategories;
 
   return {
     categories: categories,
