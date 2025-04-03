@@ -10,11 +10,13 @@ export function createChangingModeButton(dataRadarChartAge, dataRadarChartCat) {
         .insert('div', function() { return this.firstChild; })
         .style('width', '100%')
         .style('margin','10px 0px')
+        .style("font-family", "'Bebas Neue', sans-serif")
       
     div.append('button')
         .attr('id','radar-toggle-btn')
         .attr('class', 'toolbar-btn')
         .style('margin-right', '10px')
+        .style("font-family", "'Bebas Neue', sans-serif")
         .text('Switch to Categories');
       
     const dropdown = div.append('div')
@@ -23,6 +25,7 @@ export function createChangingModeButton(dataRadarChartAge, dataRadarChartCat) {
     dropdown.append('button')
         .attr('id', 'dropdown-btn')
         .attr('class', 'toolbar-btn')
+        .style("font-family", "'Bebas Neue', sans-serif")
         .text(getSortLabel(currentSort, ascending))
         .on('click', function () {
             ascending = !ascending;
