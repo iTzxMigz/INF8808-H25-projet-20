@@ -8,12 +8,14 @@ export function initDropdownAndPlot(topCategories, mergedData) {
         .style('width', '100%')
         .style('margin','10px 0px')
         .style('display', 'flex')
+        .style("font-family", "'Bebas Neue', sans-serif");
 
     div.append('button')
         .attr('id','stackedDot-toggle-btn')
         .attr('class', 'toolbar-btn')
         .style('margin-right', '10px')
-        .text('Switch to Age Certifications');
+        .text('Switch to Age Certifications')
+        .style("font-family", "'Bebas Neue', sans-serif");
 
     const dropdown = div.append('div')
         .attr("id", "dropdown")
@@ -21,6 +23,7 @@ export function initDropdownAndPlot(topCategories, mergedData) {
     dropdown.append('button')
         .attr('id', 'dropdown-btn')
         .attr('class', 'toolbar-btn')
+        .style("font-family", "'Bebas Neue', sans-serif")
         .text(topCategories[0]);
 
     const dropdownContent = dropdown.append("div")
@@ -29,9 +32,10 @@ export function initDropdownAndPlot(topCategories, mergedData) {
         .style("display", "none");
     
     // Append options to the dropdown-content
-    topCategories.forEach(option => {
+    ["All", ...topCategories].forEach(option => {
         dropdownContent.append("p")
             .attr("class", "dropdown-option")
+            .style("font-family", "'Bebas Neue', sans-serif")
             .text(option)
             .on("click", function() {
                 dropdownContent.style("display", "none");
@@ -64,7 +68,8 @@ export function initDropdownAndPlot(topCategories, mergedData) {
 
     function updatePlot(selectedCategory) {
         d3.select("#graph-5").select("svg").remove(); 
-        drawStackedDotPlot([selectedCategory], mergedData); 
+        const categoriesToPlot = selectedCategory === "All" ? topCategories : [selectedCategory];
+        drawStackedDotPlot(categoriesToPlot, mergedData);
     }
 
     d3.select("#stackedDot-toggle-btn").on("click", () => {
@@ -97,7 +102,8 @@ export function drawStackedDotPlot(topCategories, mergedData) {
               .padding(0.5);
     }
 
-    const svgHeight = height + margin;
+    const categorySpacing = height + margin;
+    const svgHeight = categorySpacing * topCategories.length;
     const svg = d3.select("#graph-5").append("svg")
         .attr("width", width)
         .attr("height", svgHeight);
@@ -158,13 +164,14 @@ export function drawStackedDotPlot(topCategories, mergedData) {
         return circles;
     }
 
-    topCategories.forEach((category) => {
+    topCategories.forEach((category, index) => {
         let filteredMovies = mergedData.filter(d => d.listed_in === category);
         filteredMovies = isIMDB ? filteredMovies : filteredMovies.filter(d => d.age_certification != null);
         filteredMovies.sort((a, b) => a.type_x.localeCompare(b.type_x));
+        const yOffset = index * categorySpacing;
 
         const categoryGroup = svg.append("g")
-            .attr("transform", `translate(0, ${margin})`);
+            .attr("transform", `translate(0, ${yOffset})`);
 
         categoryGroup
             .selectAll("circle")
@@ -193,7 +200,7 @@ export function drawStackedDotPlot(topCategories, mergedData) {
                 tooltip.transition().duration(100).style("opacity", 0);
             });
 
-        svg.append("text")
+        categoryGroup.append("text")
             .attr("x", 10)
             .attr("y", height / 2)
             .attr("dy", ".35em")
@@ -205,7 +212,8 @@ export function drawStackedDotPlot(topCategories, mergedData) {
 
         categoryGroup.append("g")
             .attr("transform", `translate(0, ${height - margin})`)
-            .call(isIMDB ? d3.axisBottom(x).ticks(5).tickSizeOuter(0) : d3.axisBottom(x));
+            .call(isIMDB ? d3.axisBottom(x).ticks(5).tickSizeOuter(0) : d3.axisBottom(x))
+            .style("font-family", "'Bebas Neue', sans-serif");
     });
 
     const legend = svg.append("g")
