@@ -87,7 +87,8 @@ export function initDropdownAndPlot(topCategories, mergedData) {
 }
 
 export function drawStackedDotPlot(topCategories, mergedData) {
-    const width = 1300, height = 350, margin = 20, radius = 5, padding = 2;
+    const width = 1300, height = 400, margin = 20, padding = 2;
+    let radius = 5;
 
     let x;
     if (isIMDB) {
@@ -95,7 +96,7 @@ export function drawStackedDotPlot(topCategories, mergedData) {
               .domain([0, 10])
               .range([margin, width - margin]);
     } else {
-        const ageCategories = [...new Set(mergedData.map(d => d.age_certification))].sort();
+        const ageCategories = [...new Set(mergedData.map(d => d.rating))].sort();
         x = d3.scalePoint()
               .domain(ageCategories.filter(item => item !== null))
               .range([margin, width - margin])
@@ -143,6 +144,9 @@ export function drawStackedDotPlot(topCategories, mergedData) {
             return false;
         }
 
+        const xStackCount = new Map();
+        const yStackCount = new Map();
+
         for (const b of circles) {
             while (head && head.x < b.x - radius2) head = head.next;
 
@@ -155,18 +159,52 @@ export function drawStackedDotPlot(topCategories, mergedData) {
                     a = a.next;
                 } while (a);
             }
+            // Handle offset if y exceeds a threshold
+            if ((b.y + 10) >= 350) {
+                let currentXCount = xStackCount.get(b.x) || 0;
+                let currentYCount = yStackCount.get(b.x) || 0;
+
+                b.x_offset = currentXCount * 10;
+
+                // Stack vertically (increment y for each stacked circle)
+                b.y = currentYCount * radius;  // Stack vertically (e.g., 2 * radius for each stacked circle)
+
+                // Increment the stack count at this x
+                yStackCount.set(b.x, currentYCount + 1);
+
+                if ( (currentYCount+1)*radius >= 350) {
+                    xStackCount.set(b.x, currentXCount + 1);
+                    yStackCount.set(b.x, 0);
+                }
+            } else {
+                let currentXCount = xStackCount.get(b.x) || 0;
+                let currentYCount = yStackCount.get(b.x) || 0;
+                b.x_offset = currentXCount * 10;
+                b.y = currentYCount * radius;
+                yStackCount.set(b.x, currentYCount + 1);
+            }
 
             b.next = null;
             if (head === null) head = tail = b;
             else tail = tail.next = b;
         }
 
+        xStackCount.forEach((count, xValue) => {
+            const totalWidth = count * 10;
+            const centerOffset = totalWidth / 2;
+            circles.forEach(c => {
+                if (c.x == xValue) {
+                    c.x_offset = c.x_offset - centerOffset;
+                }
+            })
+        });
+
         return circles;
     }
 
     topCategories.forEach((category, index) => {
         let filteredMovies = mergedData.filter(d => d.listed_in === category);
-        filteredMovies = isIMDB ? filteredMovies : filteredMovies.filter(d => d.age_certification != null);
+        filteredMovies = isIMDB ? filteredMovies : filteredMovies.filter(d => d.rating != null);
         filteredMovies.sort((a, b) => a.type_x.localeCompare(b.type_x));
         const yOffset = index * categorySpacing;
 
@@ -175,9 +213,9 @@ export function drawStackedDotPlot(topCategories, mergedData) {
 
         categoryGroup
             .selectAll("circle")
-            .data(dodge(filteredMovies, { radius: radius * 2, x: d => isIMDB ? x(d.imdb_score) : x(d.age_certification) }))
+            .data(dodge(filteredMovies, { radius: radius * 2, x: d => isIMDB ? x(d.imdb_score) : x(d.rating) }))
             .join("circle")
-            .attr("cx", d => x(isIMDB ? d.data.imdb_score : d.data.age_certification))
+            .attr("cx", d => x(isIMDB ? d.data.imdb_score : d.data.rating) + d.x_offset)
             .attr("cy", d => height - margin - radius - d.y)
             .attr("r", radius)
             .attr("fill", (d) => d.data.type_x === 'Movie' ? '#E50914' : '#221F1F')
@@ -188,7 +226,7 @@ export function drawStackedDotPlot(topCategories, mergedData) {
                     .attr("stroke", "#000");
                 tooltip.transition().duration(100).style("opacity", 0.9);
                 tooltip.html(`Name: ${d.data.title}<br>Type: ${d.data.type_x}<br>` + 
-                    (isIMDB ? `IMDb Score: ${d.data.imdb_score}` : `Age Rating: ${d.data.age_certification}`));
+                    (isIMDB ? `IMDb Score: ${d.data.imdb_score}` : `Age Rating: ${d.data.rating}`));
             })
             .on("mousemove", function(event) {
                 tooltip.style("top", (event.pageY + 10) + "px")
@@ -214,33 +252,41 @@ export function drawStackedDotPlot(topCategories, mergedData) {
             .attr("transform", `translate(0, ${height - margin})`)
             .call(isIMDB ? d3.axisBottom(x).ticks(5).tickSizeOuter(0) : d3.axisBottom(x))
             .style("font-family", "'Bebas Neue', sans-serif");
+
+        categoryGroup.append("text")
+            .attr("x", width / 2)
+            .attr("y", height + 15)
+            .text(isIMDB ? "IMDB Ratings" : "Age Ratings")
+            .style("font-size", "12px")
+            .style("font-weight", "bold")
+            .style("font-family", "'Bebas Neue', sans-serif");
+
+        const legend = categoryGroup.append("g")
+            .attr("class", "legend")
+            .attr("transform", `translate(${width - 100}, 20)`);
+
+        const legendData = [
+            { type: "Movies", color: "#E50914" },
+            { type: "TV Show", color: "#221F1F" }
+        ];
+
+        legend.selectAll("rect")
+            .data(legendData)
+            .join("rect")
+            .attr("x", 0)
+            .attr("y", (d, i) => i * 20)
+            .attr("width", 15)
+            .attr("height", 15)
+            .attr("fill", d => d.color);
+
+        legend.selectAll("text")
+            .data(legendData)
+            .join("text")
+            .attr("x", 24)
+            .attr("y", (d, i) => i * 20 + 14)
+            .text(d => d.type)
+            .attr("font-family", "'Bebas Neue', sans-serif")
+            .attr("font-size", "18px")
+            .attr("fill", "#000");
     });
-
-    const legend = svg.append("g")
-        .attr("class", "legend")
-        .attr("transform", `translate(${width - 100}, 20)`);
-
-    const legendData = [
-        { type: "Movies", color: "#E50914" },
-        { type: "TV Show", color: "#221F1F" }
-    ];
-
-    legend.selectAll("rect")
-        .data(legendData)
-        .join("rect")
-        .attr("x", 0)
-        .attr("y", (d, i) => i * 20)
-        .attr("width", 15)
-        .attr("height", 15)
-        .attr("fill", d => d.color);
-
-    legend.selectAll("text")
-        .data(legendData)
-        .join("text")
-        .attr("x", 24)
-        .attr("y", (d, i) => i * 20 + 14)
-        .text(d => d.type)
-        .attr("font-family", "'Bebas Neue', sans-serif")
-        .attr("font-size", "18px")
-        .attr("fill", "#000");
 }
