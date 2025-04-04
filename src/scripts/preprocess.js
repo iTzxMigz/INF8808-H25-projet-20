@@ -261,8 +261,9 @@ export function prepareRadarChartData(radarData, type) {
 
 export function prepareStackedDotPlotData(data) {
   const categoryCounts = {};
+
   data.forEach((d) => {
-      d.listed_in
+      d.Listed_in
           .map((s) => s.trim())
           .map(mergeListedIn)
           .forEach((category) => {
@@ -276,21 +277,16 @@ export function prepareStackedDotPlotData(data) {
       .map(([category]) => category);
 
   data.forEach((d) => {
-      const mergedCategories = d.listed_in
+      const mergedCategories = d.Listed_in
           .map((s) => s.trim())
-          .map(mergeListedIn);
-      const primaryCategory = mergedCategories[0];
-      if (!topCategories.includes(primaryCategory)) {
-          d.listed_in = 'Other';
-      } else {
-          d.listed_in = primaryCategory;
-      }
+          .map(mergeListedIn)
+          .map(category => topCategories.includes(category) ? category : "Other");
+
+      d.Listed_in = [...new Set(mergedCategories)]; // Remove duplicates
   });
 
-  const categories = topCategories;
-
   return {
-    categories: categories,
+    categories: topCategories,
     data: data
   };
 }

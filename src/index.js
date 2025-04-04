@@ -27,7 +27,7 @@ import * as stackDotPlot from './scripts/stacked-dot-plot.js'
     let resultHeatmap = preproc.processCategoriesForHeatmap(movies, filterMoviesSeriesByYear);
     let heatmapData = resultHeatmap.heatmapData
     let categoriesList = resultHeatmap.sortedCategories
-    let dataStackedDotPlot = preproc.prepareStackedDotPlotData(data);
+    let dataStackedDotPlot = preproc.prepareStackedDotPlotData(movies);
     heatmap.drawHeatmap(heatmapData);
     let radarObject = preproc.preprocessRadarChart(movies, categoriesList);
     let dataRadarChartAge = preproc.prepareRadarChartData(radarObject.radarAgeCert, "ageCert");
