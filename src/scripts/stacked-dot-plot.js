@@ -88,7 +88,7 @@ export function initDropdownAndPlot(topCategories, mergedData) {
 
 export function drawStackedDotPlot(topCategories, mergedData) {
     const width = 1300, height = 400, margin = 20, padding = 2;
-    let radius = 5;
+    let radius = 2.5;
 
     let x;
     if (isIMDB) {
@@ -96,7 +96,7 @@ export function drawStackedDotPlot(topCategories, mergedData) {
               .domain([0, 10])
               .range([margin, width - margin]);
     } else {
-        const ageCategories = [...new Set(mergedData.map(d => d.rating))].sort();
+        const ageCategories = [...new Set(mergedData.map(d => d.AgeCertification))].sort();
         x = d3.scalePoint()
               .domain(ageCategories.filter(item => item !== null))
               .range([margin, width - margin])
@@ -129,83 +129,56 @@ export function drawStackedDotPlot(topCategories, mergedData) {
 
     function dodge(data, { radius = 1, x = d => d } = {}) {
         const radius2 = radius ** 2;
-        const circles = data.map((d, i, data) => ({x: +x(d, i, data), data: d})).sort((a, b) => a.x - b.x);
-        const epsilon = 1e-3;
-        let head = null, tail = null;
-
-        function intersects(x, y) {
-            let a = head;
-            while (a) {
-                if (radius2 - epsilon > (a.x - x) ** 2 + (a.y - y) ** 2) {
-                    return true;
-                }
-                a = a.next;
-            }
-            return false;
-        }
-
-        const xStackCount = new Map();
-        const yStackCount = new Map();
-
-        for (const b of circles) {
-            while (head && head.x < b.x - radius2) head = head.next;
-
-            if (intersects(b.x, b.y = 0)) {
-                let a = head;
-                b.y = Infinity;
-                do {
-                    let y = a.y + Math.sqrt(radius2 - (a.x - b.x) ** 2);
-                    if (y < b.y && !intersects(b.x, y)) b.y = y;
-                    a = a.next;
-                } while (a);
-            }
-            // Handle offset if y exceeds a threshold
-            if ((b.y + 10) >= 350) {
-                let currentXCount = xStackCount.get(b.x) || 0;
-                let currentYCount = yStackCount.get(b.x) || 0;
-
-                b.x_offset = currentXCount * 10;
-
-                // Stack vertically (increment y for each stacked circle)
-                b.y = currentYCount * radius;  // Stack vertically (e.g., 2 * radius for each stacked circle)
-
-                // Increment the stack count at this x
-                yStackCount.set(b.x, currentYCount + 1);
-
-                if ( (currentYCount+1)*radius >= 350) {
-                    xStackCount.set(b.x, currentXCount + 1);
-                    yStackCount.set(b.x, 0);
-                }
-            } else {
-                let currentXCount = xStackCount.get(b.x) || 0;
-                let currentYCount = yStackCount.get(b.x) || 0;
-                b.x_offset = currentXCount * 10;
-                b.y = currentYCount * radius;
-                yStackCount.set(b.x, currentYCount + 1);
-            }
-
-            b.next = null;
-            if (head === null) head = tail = b;
-            else tail = tail.next = b;
-        }
-
-        xStackCount.forEach((count, xValue) => {
-            const totalWidth = count * 10;
-            const centerOffset = totalWidth / 2;
-            circles.forEach(c => {
-                if (c.x == xValue) {
-                    c.x_offset = c.x_offset - centerOffset;
-                }
-            })
+        const circles = data.map((d, i, data) => ({ x: +x(d, i, data), data: d })).sort((a, b) => a.x - b.x);
+        const stackHeightLimit = 350; // Max desired height per stack
+    
+        // Compute total number of circles at each x
+        const xCounts = new Map();
+        circles.forEach(b => {
+            xCounts.set(b.x, (xCounts.get(b.x) || 0) + 1);
         });
-
+    
+        // Compute required stacks for each x
+        const xStackCount = new Map();
+        xCounts.forEach((count, xValue) => {
+            const stacksNeeded = Math.ceil(count * radius / stackHeightLimit);
+            xStackCount.set(xValue, stacksNeeded);
+        });
+    
+        // Maps for tracking stacks
+        const yStacks = new Map(); // Tracks how high each stack at x has grown
+        const stackIndex = new Map(); // Current stack assignment for each x
+    
+        circles.forEach(b => {
+            const numStacks = xStackCount.get(b.x) || 1;
+            
+            // Initialize stack trackers if not present
+            if (!yStacks.has(b.x)) {
+                yStacks.set(b.x, Array(numStacks).fill(0)); // Initialize all stacks at 0 height
+                stackIndex.set(b.x, 0);
+            }
+    
+            // Assign circle to the next available stack in a round-robin fashion
+            let currentStack = stackIndex.get(b.x);
+            b.y = yStacks.get(b.x)[currentStack] * radius; // Place at current stack height
+            b.x_offset = (currentStack - (numStacks - 1) / 2) * radius; // Center the stacks
+    
+            // Update stack height
+            yStacks.get(b.x)[currentStack] += 1;
+    
+            // Move to the next stack (round-robin)
+            stackIndex.set(b.x, (currentStack + 1) % numStacks);
+        });
+    
         return circles;
     }
+    
 
     topCategories.forEach((category, index) => {
-        let filteredMovies = mergedData.filter(d => d.listed_in === category);
-        filteredMovies = isIMDB ? filteredMovies : filteredMovies.filter(d => d.rating != null);
-        filteredMovies.sort((a, b) => a.type_x.localeCompare(b.type_x));
+        let filteredMovies = mergedData.filter(d => d.Listed_in.includes(category));
+        filteredMovies = isIMDB ? filteredMovies : filteredMovies.filter(d => d.AgeCertification != null);
+        console.log(filteredMovies);
+        filteredMovies.sort((a, b) => a.Type.localeCompare(b.Type));
         const yOffset = index * categorySpacing;
 
         const categoryGroup = svg.append("g")
@@ -213,20 +186,20 @@ export function drawStackedDotPlot(topCategories, mergedData) {
 
         categoryGroup
             .selectAll("circle")
-            .data(dodge(filteredMovies, { radius: radius * 2, x: d => isIMDB ? x(d.imdb_score) : x(d.rating) }))
+            .data(dodge(filteredMovies, { radius: radius * 2, x: d => isIMDB ? x(d.Score) : x(d.AgeCertification) }))
             .join("circle")
-            .attr("cx", d => x(isIMDB ? d.data.imdb_score : d.data.rating) + d.x_offset)
+            .attr("cx", d => x(isIMDB ? d.data.Score : d.data.AgeCertification) + d.x_offset)
             .attr("cy", d => height - margin - radius - d.y)
             .attr("r", radius)
-            .attr("fill", (d) => d.data.type_x === 'Movie' ? '#E50914' : '#221F1F')
+            .attr("fill", (d) => d.data.Type === 'Movie' ? '#E50914' : '#221F1F')
             .on("mouseover", function(event, d) { 
                 d3.selectAll("circle").style("opacity", 0.3); 
                 d3.select(this)
                     .style("opacity", 1)
                     .attr("stroke", "#000");
                 tooltip.transition().duration(100).style("opacity", 0.9);
-                tooltip.html(`Name: ${d.data.title}<br>Type: ${d.data.type_x}<br>` + 
-                    (isIMDB ? `IMDb Score: ${d.data.imdb_score}` : `Age Rating: ${d.data.rating}`));
+                tooltip.html(`Name: ${d.data.Title}<br>Type: ${d.data.Type}<br>` + 
+                    (isIMDB ? `IMDb Score: ${d.data.Score}` : `Age Rating: ${d.data.AgeCertification}`));
             })
             .on("mousemove", function(event) {
                 tooltip.style("top", (event.pageY + 10) + "px")
