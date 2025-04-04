@@ -87,8 +87,8 @@ export function initDropdownAndPlot(topCategories, mergedData) {
 }
 
 export function drawStackedDotPlot(topCategories, mergedData) {
-    const width = 1300, height = 400, margin = 20, padding = 2;
-    let radius = 2.5;
+    const width = 1300, height = 600, margin = 20, padding = 2;
+    let radius = 4;
 
     let x;
     if (isIMDB) {
@@ -130,7 +130,7 @@ export function drawStackedDotPlot(topCategories, mergedData) {
     function dodge(data, { radius = 1, x = d => d } = {}) {
         const radius2 = radius ** 2;
         const circles = data.map((d, i, data) => ({ x: +x(d, i, data), data: d })).sort((a, b) => a.x - b.x);
-        const stackHeightLimit = 350; // Max desired height per stack
+        const stackHeightLimit = 600; // Max desired height per stack
     
         // Compute total number of circles at each x
         const xCounts = new Map();
