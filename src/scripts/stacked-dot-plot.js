@@ -137,6 +137,7 @@ export function drawStackedDotPlot(topCategories, mergedData) {
         circles.forEach(b => {
             xCounts.set(b.x, (xCounts.get(b.x) || 0) + 1);
         });
+
     
         // Compute required stacks for each x
         const xStackCount = new Map();
@@ -144,6 +145,14 @@ export function drawStackedDotPlot(topCategories, mergedData) {
             const stacksNeeded = Math.ceil(count * radius / stackHeightLimit);
             xStackCount.set(xValue, stacksNeeded);
         });
+
+        const largestEntry = [...xStackCount.entries()].reduce((max, entry) => entry[1] > max[1] ? entry : max);
+
+        xStackCount.forEach((count, xValue) => {
+            xStackCount.set(xValue, largestEntry[1])
+        });
+
+        console.log(xStackCount);
     
         // Maps for tracking stacks
         const yStacks = new Map(); // Tracks how high each stack at x has grown
@@ -151,6 +160,7 @@ export function drawStackedDotPlot(topCategories, mergedData) {
     
         circles.forEach(b => {
             const numStacks = xStackCount.get(b.x) || 1;
+            const numInStacks = xCounts.get(b.x) || 1;
             
             // Initialize stack trackers if not present
             if (!yStacks.has(b.x)) {
@@ -161,8 +171,11 @@ export function drawStackedDotPlot(topCategories, mergedData) {
             // Assign circle to the next available stack in a round-robin fashion
             let currentStack = stackIndex.get(b.x);
             b.y = yStacks.get(b.x)[currentStack] * radius; // Place at current stack height
-            b.x_offset = (currentStack - (numStacks - 1) / 2) * radius; // Center the stacks
-    
+            if (numInStacks >= numStacks) {
+                b.x_offset = (currentStack - (numStacks - 1) / 2) * radius; // Center the stacks
+            } else {
+                b.x_offset = (currentStack - (numInStacks - 1) / 2) * radius;
+            }
             // Update stack height
             yStacks.get(b.x)[currentStack] += 1;
     
