@@ -154,32 +154,27 @@ export function drawStackedDotPlot(topCategories, mergedData) {
 
         console.log(xStackCount);
     
-        // Maps for tracking stacks
-        const yStacks = new Map(); // Tracks how high each stack at x has grown
-        const stackIndex = new Map(); // Current stack assignment for each x
+        const yStacks = new Map();
+        const stackIndex = new Map();
     
         circles.forEach(b => {
             const numStacks = xStackCount.get(b.x) || 1;
             const numInStacks = xCounts.get(b.x) || 1;
             
-            // Initialize stack trackers if not present
             if (!yStacks.has(b.x)) {
-                yStacks.set(b.x, Array(numStacks).fill(0)); // Initialize all stacks at 0 height
+                yStacks.set(b.x, Array(numStacks).fill(0));
                 stackIndex.set(b.x, 0);
             }
     
-            // Assign circle to the next available stack in a round-robin fashion
             let currentStack = stackIndex.get(b.x);
-            b.y = yStacks.get(b.x)[currentStack] * radius; // Place at current stack height
+            b.y = yStacks.get(b.x)[currentStack] * radius;
             if (numInStacks >= numStacks) {
-                b.x_offset = (currentStack - (numStacks - 1) / 2) * radius; // Center the stacks
+                b.x_offset = (currentStack - (numStacks - 1) / 2) * radius;
             } else {
                 b.x_offset = (currentStack - (numInStacks - 1) / 2) * radius;
             }
-            // Update stack height
             yStacks.get(b.x)[currentStack] += 1;
     
-            // Move to the next stack (round-robin)
             stackIndex.set(b.x, (currentStack + 1) % numStacks);
         });
     
