@@ -127,8 +127,7 @@ export function drawStackedDotPlot(topCategories, mergedData) {
             .style("z-index", 10);
     }
 
-    function dodge(data, { radius = 1, x = d => d } = {}) {
-        const radius2 = radius ** 2;
+    function get_max_stacks(data, { radius = 1, x = d => d } = {}) {
         const circles = data.map((d, i, data) => ({ x: +x(d, i, data), data: d })).sort((a, b) => a.x - b.x);
         const stackHeightLimit = 600; // Max desired height per stack
     
@@ -148,11 +147,19 @@ export function drawStackedDotPlot(topCategories, mergedData) {
 
         const largestEntry = [...xStackCount.entries()].reduce((max, entry) => entry[1] > max[1] ? entry : max);
 
-        xStackCount.forEach((count, xValue) => {
-            xStackCount.set(xValue, largestEntry[1])
-        });
+        return largestEntry;
+    }
 
-        console.log(xStackCount);
+    function dodge(data, { radius = 1, x = d => d } = {}, stacks) {
+        const circles = data.map((d, i, data) => ({ x: +x(d, i, data), data: d })).sort((a, b) => a.x - b.x);
+    
+        // Compute total number of circles at each x
+        const xCounts = new Map();
+        const xStackCount = new Map();
+        circles.forEach(b => {
+            xCounts.set(b.x, (xCounts.get(b.x) || 0) + 1);
+            xStackCount.set(b.x, stacks);
+        });
     
         const yStacks = new Map();
         const stackIndex = new Map();
@@ -181,11 +188,20 @@ export function drawStackedDotPlot(topCategories, mergedData) {
         return circles;
     }
     
+    const largestStacks = new Map();
+    topCategories.forEach((category, index) => {
+        let filteredMovies = mergedData.filter(d => d.Listed_in.includes(category));
+        filteredMovies = isIMDB ? filteredMovies : filteredMovies.filter(d => d.AgeCertification != null);
+        filteredMovies.sort((a, b) => a.Type.localeCompare(b.Type));
+        const large = get_max_stacks(filteredMovies, { radius: radius * 2, x: d => isIMDB ? x(d.Score) : x(d.AgeCertification) })
+        largestStacks.set(category, large);
+    });
+
+    const maxValue = Math.max(...[...largestStacks.values()].map(v => v[1]));
 
     topCategories.forEach((category, index) => {
         let filteredMovies = mergedData.filter(d => d.Listed_in.includes(category));
         filteredMovies = isIMDB ? filteredMovies : filteredMovies.filter(d => d.AgeCertification != null);
-        console.log(filteredMovies);
         filteredMovies.sort((a, b) => a.Type.localeCompare(b.Type));
         const yOffset = index * categorySpacing;
 
@@ -194,7 +210,7 @@ export function drawStackedDotPlot(topCategories, mergedData) {
 
         categoryGroup
             .selectAll("circle")
-            .data(dodge(filteredMovies, { radius: radius * 2, x: d => isIMDB ? x(d.Score) : x(d.AgeCertification) }))
+            .data(dodge(filteredMovies, { radius: radius * 2, x: d => isIMDB ? x(d.Score) : x(d.AgeCertification) }, maxValue))
             .join("circle")
             .attr("cx", d => x(isIMDB ? d.data.Score : d.data.AgeCertification) + d.x_offset)
             .attr("cy", d => height - margin - radius - d.y)
