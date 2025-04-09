@@ -38,10 +38,11 @@ import * as stackDotPlot from './scripts/stacked-dot-plot.js'
     // radarChart.createChangingModeButton(dataRadarChartAge, dataRadarChartCat)
     // radarChart.drawMultipleRadarCharts(dataRadarChartAge, true)
 
-    geomap.drawGeomap(movies)
-    /*
+    // d3.select('#table-container').classed('active', true)
+    // geomap.drawGeomap(movies)
+    // d3.select('#table-container').classed('active', false)
+
     stackDotPlot.initDropdownAndPlot(dataStackedDotPlot.categories, dataStackedDotPlot.data)
-    */
   })
 })(d3)
 

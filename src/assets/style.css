@@ -420,12 +420,18 @@ font-size: 1.6vh;
   justify-content: center;
 }
 
-.table-container {
+.table-container.active {
   z-index: 2;
+  opacity: 0.9;
   margin-right: -25%;
   width: 70%;
   height: 500px;
   overflow-y: scroll;
   background-color: #ffffff;
   border-radius: 5px;
+}
+
+.table-container{
+  opacity: 0;
+  z-index: 0;
 }
