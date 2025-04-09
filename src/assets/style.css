@@ -1,7 +1,7 @@
 body {
     font-family: 'Roboto Slab', 'sans-serif';
     font-size: 1.6vh;
-    background-color: #fff;
+    background: #111;
     color: #2A2B2E;
     margin: 0;
     width: 100vw;
@@ -12,7 +12,7 @@ body {
 }
 
 header {
-    background-color: #fff;
+    background-color: #111;
     padding-top: 2vh;
     padding-bottom: 2vh;
     padding-left: 5vw;
@@ -234,3 +234,190 @@ font-size: 1.6vh;
   height: 0 !important;
   width: 0 !important;
 }
+
+/* Design du cinéma*/
+.theatre {
+  display: flex;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.cinema-seats {
+  display: flex;
+  
+  
+}
+
+
+/* Left Seats*/
+.left {
+  
+  .cinema-row {
+    transform: skew(-15deg);
+    margin: 0 6px;
+  }
+
+  .seat {
+    width: 45px;     
+    height: 65px;   
+    border-radius: 7px;
+    background: linear-gradient(to top, #761818, #761818, #761818, #761818, #761818, #B54041,  #F3686A);
+    margin-bottom: 12px;  /* Légèrement augmenté pour l'espacement */
+    transform: skew(20deg);
+    margin-top: -32px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5)
+  }
+  .row-2 {
+    transform: skew(-13deg);
+
+    .seat {
+      transform: skew(18deg);
+    }
+  }
+
+  .row-3 {
+    transform: skew(-12deg);
+
+    .seat {
+      transform: skew(16deg);
+    }
+  }
+
+  .row-4 {
+    transform: skew(-11deg);
+
+    .seat {
+      transform: skew(15deg);
+    }
+  }
+
+  .row-5 {
+    transform: skew(-10deg);
+
+    .seat {
+      transform: skew(12deg);
+    }
+  }
+
+  .row-6 {
+    transform: skew(-9deg);
+
+    .seat {
+      transform: skew(10deg);
+    }
+  }
+
+  .row-7 {
+    transform: skew(-7deg);
+
+    .seat {
+      transform: skew(8deg);
+    }
+  } 
+}
+
+
+
+
+
+/* Left Seats*/
+.right {
+  margin-left: 90px;  /* Augmenté de 70px à 90px pour compenser les sièges plus larges */
+  
+  .cinema-row {
+    transform: skew(7deg);
+    margin: 0 6px;
+  }
+
+  .seat {
+    width: 45px;     /* Augmenté de 35px à 45px */
+    height: 65px;    /* Augmenté de 50px à 65px */
+    border-radius: 7px;
+    background: linear-gradient(to top, #761818, #761818, #761818, #761818, #761818, #B54041,  #F3686A);
+    margin-bottom: 12px;  /* Légèrement augmenté pour l'espacement */
+    transform: skew(-8deg);
+    margin-top: -32px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5)
+  }
+  
+  .row-2 {
+    transform: skew(9deg);
+
+    .seat {
+      transform: skew(-10deg);
+    }
+  }
+
+  .row-3 {
+    transform: skew(10deg);
+
+    .seat {
+      transform: skew(-12deg);
+    }
+  }
+
+  .row-4 {
+    transform: skew(11deg);
+
+    .seat {
+      transform: skew(-15deg);
+    }
+  }
+
+  .row-5 {
+    transform: skew(12deg);
+
+    .seat {
+      transform: skew(-16deg);
+    }
+  }
+
+  .row-6 {
+    transform: skew(13deg);
+
+    .seat {
+      transform: skew(-18deg);
+    }
+  }
+
+  .row-7 {
+    transform: skew(15deg);
+
+    .seat {
+      transform: skew(-20deg);
+    }
+  } 
+}
+
+
+.cinema-screen {
+  position: absolute;
+  width: 800px;
+  height: 400px;
+  background: linear-gradient(to bottom, #333333, #222222);
+  border-radius: 3px;
+  box-shadow: 0 0 60px rgba(255, 255, 255, 0.5);
+  transform: perspective(800px) rotateX(-3deg);
+  border: 1px solid #444;
+  top: -450px;
+  left: 50%;
+  transform-origin: center bottom;
+  margin-left: -400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+
+/* Cette partie assure que les SVG s'adaptent correctement à l'écran */
+.cinema-screen svg {
+  width: 95%;
+  height: 95%;
+  background-color: transparent;
+}
+
+
+
