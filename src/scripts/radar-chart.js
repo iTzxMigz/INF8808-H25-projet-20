@@ -131,6 +131,7 @@ function updateRadar (data) {
  */
 export function drawMultipleRadarCharts (data, isAgeCert) {
   const container = d3.select('#screen')
+  container.selectAll('*').remove()
   const numCharts = data.length // Nombre total de graphiques (26)
   const screenWidth = 800 // Largeur de l'écran
   const screenHeight = 400 // Hauteur de l'écran
