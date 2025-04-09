@@ -1,7 +1,7 @@
 'use strict'
 
 import * as preproc from './scripts/preprocess.js'
-import * as radarChart from './scripts/radar-chart.js'
+import * as radarChart from './scripts/radar-chart.js';
 import { drawStackedBarChart } from './scripts/stack-barchart.js'
 import { drawHeatmap } from './scripts/heatmap.js';
 import * as geomap from './scripts/geomap.js'
@@ -26,18 +26,19 @@ import * as stackDotPlot from './scripts/stacked-dot-plot.js'
       TVShows: values.TVShows
     })).sort((a, b) => a.year - b.year)
     drawShape()
-    //drawStackedBarChart(chartData) // Dessine le graphique
+    //drawStackedBarChart(chartData) 
     const resultHeatmap = preproc.processCategoriesForHeatmap(movies, filterMoviesSeriesByYear)
     const heatmapData = resultHeatmap.heatmapData
     const categoriesList = resultHeatmap.sortedCategories
     const dataStackedDotPlot = preproc.prepareStackedDotPlotData(movies)
-    drawHeatmap(heatmapData)
-    /*
+    //drawHeatmap(heatmapData)
     const radarObject = preproc.preprocessRadarChart(movies, categoriesList)
     const dataRadarChartAge = preproc.prepareRadarChartData(radarObject.radarAgeCert, 'ageCert')
     const dataRadarChartCat = preproc.prepareRadarChartData(radarObject.radarCategories, '')
     radarChart.createChangingModeButton(dataRadarChartAge, dataRadarChartCat)
     radarChart.drawMultipleRadarCharts(dataRadarChartAge, true)
+
+    /*
     geomap.drawGeomap(movies)
     stackDotPlot.initDropdownAndPlot(dataStackedDotPlot.categories, dataStackedDotPlot.data)
     */
