@@ -2,8 +2,8 @@
 
 import * as preproc from './scripts/preprocess.js'
 import * as radarChart from './scripts/radar-chart.js'
-import * as stackBarChart from './scripts/stack-barchart.js'
-import * as heatmap from './scripts/heatmap.js'
+import { drawStackedBarChart } from './scripts/stack-barchart.js'
+import { drawHeatmap } from './scripts/heatmap.js';
 import * as geomap from './scripts/geomap.js'
 import * as stackDotPlot from './scripts/stacked-dot-plot.js'
 
@@ -25,13 +25,14 @@ import * as stackDotPlot from './scripts/stacked-dot-plot.js'
       Movies: values.Movies,
       TVShows: values.TVShows
     })).sort((a, b) => a.year - b.year)
-    drawShape(5)
-    stackBarChart.drawStackedBarChart(chartData)
+    drawShape()
+    //drawStackedBarChart(chartData) // Dessine le graphique
     const resultHeatmap = preproc.processCategoriesForHeatmap(movies, filterMoviesSeriesByYear)
     const heatmapData = resultHeatmap.heatmapData
     const categoriesList = resultHeatmap.sortedCategories
     const dataStackedDotPlot = preproc.prepareStackedDotPlotData(movies)
-    heatmap.drawHeatmap(heatmapData)
+    drawHeatmap(heatmapData)
+    /*
     const radarObject = preproc.preprocessRadarChart(movies, categoriesList)
     const dataRadarChartAge = preproc.prepareRadarChartData(radarObject.radarAgeCert, 'ageCert')
     const dataRadarChartCat = preproc.prepareRadarChartData(radarObject.radarCategories, '')
@@ -39,51 +40,17 @@ import * as stackDotPlot from './scripts/stacked-dot-plot.js'
     radarChart.drawMultipleRadarCharts(dataRadarChartAge, true)
     geomap.drawGeomap(movies)
     stackDotPlot.initDropdownAndPlot(dataStackedDotPlot.categories, dataStackedDotPlot.data)
-    changingTitleDynamically()
+    */
   })
 })(d3)
 
-function drawShape (numberOfGraph) {
-  for (let i = 0; i < numberOfGraph; i++) {
-    const div = d3.select('#cinema-screen')
-      .append('div')
-      .attr('class', 'viz-container')
-      .attr('id', `viz-container-${i + 1}`)
-    div.append('div')
-      .attr('class', 'graph')
-      .attr('id', `graph-${i + 1}`)
-  }
-}
+export function drawShape () {
+  const width = 800 // Largeur du SVG
+  const height = 400 // Hauteur du SVG
 
-/**
- *
- */
-function changingTitleDynamically () {
-  const headerTitle = d3.select('header h1')
-
-  const titlesByViz = {
-    'viz-container-1': 'Movies and Series added to Netflix by year',
-    'viz-container-2': 'Distribution of Categories per year on Netflix',
-    'viz-container-3': () => radarChart.isAgeCertMode ? radarChart.titleAgerCert : radarChart.titleCategories,
-    'viz-container-4': 'Content Production and IMDb Scores by Country on Netflix',
-    'viz-container-5': () => stackDotPlot.isIMDB ? stackDotPlot.titleIMDB : stackDotPlot.titleAge
-  // ajoute d'autres si tu veux
-  }
-
-  window.addEventListener('scroll', () => {
-    d3.selectAll('.viz-container').each(function () {
-      const rect = this.getBoundingClientRect()
-      const height = window.innerHeight
-
-      if (rect.top < height / 4 && rect.bottom > height - height / 4) {
-        const id = this.id
-        const title = typeof titlesByViz[id] === 'function'
-          ? titlesByViz[id]()
-          : titlesByViz[id]
-        if (title) {
-          headerTitle.text(title)
-        }
-      }
-    })
-  })
+  // Sélectionner la div avec l'ID "screen" et y ajouter un SVG
+  d3.select('#screen')
+    .append('svg')
+    .attr('width', width)
+    .attr('height', height)
 }
