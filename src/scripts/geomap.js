@@ -116,54 +116,58 @@ export function drawGeomap (data) {
 
 	  countryPaths
 	  .filter(d => {
-		const name = countryNameMapping[d.properties.name] || d.properties.name;
-		return countryCounts[name] !== undefined;
+        const name = countryNameMapping[d.properties.name] || d.properties.name
+        return countryCounts[name] !== undefined
 	  })
 	  .on('mouseover', function (event, d) {
-		const name = countryNameMapping[d.properties.name] || d.properties.name;
-	
-		// Mettre en évidence le pays sur la carte
-		d3.selectAll('path').attr('fill', '#ccc').attr('opacity', 0.5);
-		d3.select(this).attr('fill', '#666').attr('opacity', 1)
+        const name = countryNameMapping[d.properties.name] || d.properties.name
+
+        // Mettre en évidence le pays sur la carte
+        d3.selectAll('path').attr('fill', '#ccc').attr('opacity', 0.5)
+        d3.select(this).attr('fill', '#666').attr('opacity', 1)
 					   .style('stroke', 'black')
-					   .style('stroke-width', 2);
-	
-		// Mettre en évidence la ligne correspondante dans le tableau
-		d3.selectAll('tr').classed('highlight', false);
-		const row = d3.select(`tr[data-country="${name}"]`).classed('highlight', true);
-	
-		// Faire défiler automatiquement jusqu'à la ligne correspondante
-		const rowNode = row.node();
-		if (rowNode) {
-		  rowNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
-		}
-	
-		// Afficher le tooltip
-		tooltip.transition().duration(100).style('opacity', 0.9);
-		tooltip.html(`
+					   .style('stroke-width', 2)
+
+        // Mettre en évidence la ligne correspondante dans le tableau
+        d3.selectAll('tr').classed('highlight', false)
+        const row = d3.select(`tr[data-country="${name}"]`).classed('highlight', true)
+
+        // Faire défiler automatiquement jusqu'à la ligne correspondante
+        const rowNode = row.node()
+        if (rowNode) {
+		  rowNode.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }
+
+        // Afficher le tooltip
+        tooltip.transition().duration(100).style('opacity', 0.9)
+        tooltip.html(`
 		  <u>${name}</u><br>
 		  Total titles: ${countryCounts[name]}<br>
 		  Avg IMDb: ${countryAverages[name].toFixed(2)}
 		`)
-		.style('left', (event.pageX + 10) + 'px')
-		.style('top', (event.pageY - 28) + 'px')
-		.style('font-family', 'Bebas Neue')
-		.style('font-size', '18px');
+          .style('left', (event.pageX + 10) + 'px')
+          .style('top', (event.pageY - 28) + 'px')
+          .style('font-family', 'Bebas Neue')
+          .style('font-size', '18px')
 	  })
 	  .on('mousemove', function (event) {
-		tooltip
+        tooltip
 		  .style('left', (event.pageX + 10) + 'px')
-		  .style('top', (event.pageY - 28) + 'px');
+		  .style('top', (event.pageY - 28) + 'px')
 	  })
 	  .on('mouseout', function () {
-		d3.selectAll('path').attr('fill', '#ccc').attr('opacity', 1)
-							.style('stroke', 'none');
-	
-		d3.selectAll('tr').classed('highlight', false);
-	
-		tooltip.transition().duration(100).style('opacity', 0);
-	  });
+        d3.selectAll('path').attr('fill', '#ccc').attr('opacity', 1)
+          .style('stroke', 'none')
 
+        d3.selectAll('tr').classed('highlight', false)
+
+        tooltip.transition().duration(100).style('opacity', 0)
+	  })
+
+    /**
+     * @param sortedCountries
+     * @param highlightCountry
+     */
     function renderCountryTable (sortedCountries, highlightCountry = null) {
       const tbody = d3.select('country-table-body')
       tbody.selectAll('tr').remove()

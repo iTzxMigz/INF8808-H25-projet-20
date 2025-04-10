@@ -88,7 +88,7 @@ function callFunction4 () {
   const tableContainer = document.getElementById('table-container')
   const stopScrollPropagation = function (event) {
     event.stopPropagation() // Empêche la propagation de l'événement de scroll
-  };
+  }
 
   // Ajouter l'écouteur uniquement si la classe "active" est présente
   if (d3.select('#table-container').classed('active')) {
@@ -99,9 +99,9 @@ function callFunction4 () {
   const observer = new MutationObserver(() => {
     if (!d3.select('#table-container').classed('active')) {
       tableContainer.removeEventListener('wheel', stopScrollPropagation)
-      observer.disconnect(); // Arrêter d'observer les mutations
+      observer.disconnect() // Arrêter d'observer les mutations
     }
-  });
+  })
 
   // Observer les changements de classe sur le conteneur
   observer.observe(tableContainer, { attributes: true, attributeFilter: ['class'] })
@@ -139,6 +139,7 @@ function handleScroll (event) {
 
   // Appeler les fonctions en fonction de la position virtuelle
   updateContentBasedOnScroll(virtualScrollPosition)
+  illuminateSeatsOnScroll(virtualScrollPosition)
 }
 
 // Variable pour suivre la dernière fonction appelée
@@ -198,4 +199,32 @@ export function drawShape () {
     .append('svg')
     .attr('width', width)
     .attr('height', height)
+}
+
+// Tableau global pour suivre les sièges déjà éclairés
+const litSeats = new Set()
+
+function illuminateSeatsOnScroll(scrollPosition) {
+  const seats = Array.from(document.querySelectorAll('.seat')) // Récupérer tous les sièges
+  const totalSeats = seats.length
+
+  // Générer un ordre pseudo-aléatoire pour les sièges (une seule fois)
+  if (!window.randomOrder) {
+    window.randomOrder = [...Array(totalSeats).keys()].sort(() => Math.random() - 0.5)
+  }
+
+  // Calculer la progression du scroll
+  const progress = Math.min(scrollPosition / maxScroll, 1) // Progression entre 0 et 1
+
+  // Déterminer combien de sièges doivent être éclairés
+  const seatsToLight = Math.floor(progress * totalSeats)
+
+  // Éclairer les sièges selon l'ordre pseudo-aléatoire
+  seats.forEach((seat, index) => {
+    const seatIndex = window.randomOrder.indexOf(index)
+    if (seatIndex < seatsToLight && !litSeats.has(index)) {
+      seat.classList.add('lit') // Ajouter la classe "lit"
+      litSeats.add(index) // Marquer le siège comme éclairé
+    }
+  })
 }
