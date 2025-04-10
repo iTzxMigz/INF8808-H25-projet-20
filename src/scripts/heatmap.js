@@ -2,12 +2,14 @@
  * @param data
  */
 export function drawHeatmap (data) {
-  const width = 800 // Largeur du SVG
-  const height = 400 // Hauteur du SVG
+  const width = 900 // Largeur du SVG
+  const height = 450 // Hauteur du SVG
   const margin = { top: 50, right: 30, bottom: 50, left: 100 }
 
   // Sélectionner ou créer le SVG dans la div #screen
-  const svg = d3.select('#screen svg')
+  const container = d3.select('#screen')
+  container.selectAll('*').remove()
+  const svg = container.append('svg')
     .attr('width', width)
     .attr('height', height)
 

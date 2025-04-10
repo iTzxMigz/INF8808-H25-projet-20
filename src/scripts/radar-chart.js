@@ -133,8 +133,8 @@ export function drawMultipleRadarCharts (data, isAgeCert) {
   const container = d3.select('#screen')
   container.selectAll('*').remove()
   const numCharts = data.length // Nombre total de graphiques (26)
-  const screenWidth = 800 // Largeur de l'écran
-  const screenHeight = 400 // Hauteur de l'écran
+  const screenWidth = 900 // Largeur de l'écran
+  const screenHeight = 450 // Hauteur de l'écran
   const columns = Math.ceil(Math.sqrt(numCharts)) // Nombre de colonnes dans la grille
   const rows = Math.ceil(numCharts / columns) // Nombre de lignes dans la grille
 

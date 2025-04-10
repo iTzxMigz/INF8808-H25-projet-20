@@ -2,12 +2,14 @@
  * @param chartData
  */
 export function drawStackedBarChart (chartData) {
-  const width = 800 // Largeur du SVG
-  const height = 400 // Hauteur du SVG
+  const width = 900 // Largeur du SVG
+  const height = 450 // Hauteur du SVG
   const margin = { top: 50, right: 50, bottom: 50, left: 70 }
 
   // Sélectionner le SVG dans la div #screen
-  const svg = d3.select('#screen svg')
+  const container = d3.select('#screen')
+  container.selectAll('*').remove()
+  const svg = container.append('svg')
     .attr('width', width)
     .attr('height', height)
 
