@@ -42,6 +42,7 @@ let chartData, heatmapData, dataRadarChartAge, dataRadarChartCat, movies, dataSt
  *
  */
 function callFunction1 () {
+  hideTooltip()
   d3.select('.info-container p').text('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
   d3.select('.bottom-bar h1').text('Movies and Series added to Netflix by year')
   d3.select('#table-container').classed('active', false)
@@ -52,6 +53,7 @@ function callFunction1 () {
  *
  */
 function callFunction2 () {
+  hideTooltip()
   d3.select('.info-container p').text('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
   d3.select('.bottom-bar h1').text('Distribution of categories per year on Netflix')
   const container = d3.select('#button-container')
@@ -64,6 +66,7 @@ function callFunction2 () {
  *
  */
 function callFunction3 () {
+  hideTooltip()
   d3.select('.info-container p').text('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
   d3.select('.bottom-bar h1').text('Distribution of Age Ratings by Country on Netflix')
   const container = d3.select('#button-container')
@@ -77,6 +80,7 @@ function callFunction3 () {
  *
  */
 function callFunction4 () {
+  hideTooltip()
   d3.select('.info-container p').text('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
   d3.select('.bottom-bar h1').text('Content Production and IMDb Scores by Country on Netflix')
   const container = d3.select('#button-container')
@@ -111,6 +115,7 @@ function callFunction4 () {
  *
  */
 function callFunction5 () {
+  hideTooltip()
   d3.select('.info-container p').text('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
   d3.select('.bottom-bar h1').text('Which category has the best IMDB mean score ?')
   d3.select('#table-container').classed('active', false)
@@ -227,4 +232,18 @@ function illuminateSeatsOnScroll(scrollPosition) {
       litSeats.add(index) // Marquer le siège comme éclairé
     }
   })
+}
+
+// Fonction pour masquer le tooltip
+function hideTooltip () {
+  console.log('Masquer le tooltip')
+  d3.selectAll('div')
+    .filter(function () {
+      // Filtrer les divs avec les styles spécifiques du tooltip
+      return this.style.position === 'absolute' &&
+             this.style.background === 'rgb(20, 20, 20)' &&
+             this.style.color === 'rgb(255, 255, 255)' &&
+             this.style.border === '3px solid rgb(229, 9, 20)'
+    })
+    .style('opacity', 0) // Masquer le tooltip
 }
