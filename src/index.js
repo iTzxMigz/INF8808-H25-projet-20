@@ -42,6 +42,8 @@ let chartData, heatmapData, dataRadarChartAge, dataRadarChartCat, movies, dataSt
  *
  */
 function callFunction1 () {
+  d3.select('.info-container p').text('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
+  d3.select('.bottom-bar h1').text('Movies and Series added to Netflix by year')
   d3.select('#table-container').classed('active', false)
   drawStackedBarChart(chartData)
 }
@@ -50,6 +52,8 @@ function callFunction1 () {
  *
  */
 function callFunction2 () {
+  d3.select('.info-container p').text('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
+  d3.select('.bottom-bar h1').text('Distribution of categories per year on Netflix')
   const container = d3.select('#button-container')
   container.selectAll('*').remove()
   d3.select('#table-container').classed('active', false)
@@ -60,6 +64,8 @@ function callFunction2 () {
  *
  */
 function callFunction3 () {
+  d3.select('.info-container p').text('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
+  d3.select('.bottom-bar h1').text('Distribution of Age Ratings by Country on Netflix')
   const container = d3.select('#button-container')
   container.selectAll('*').remove()
   d3.select('#table-container').classed('active', false)
@@ -71,16 +77,42 @@ function callFunction3 () {
  *
  */
 function callFunction4 () {
+  d3.select('.info-container p').text('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
+  d3.select('.bottom-bar h1').text('Content Production and IMDb Scores by Country on Netflix')
   const container = d3.select('#button-container')
   container.selectAll('*').remove()
   d3.select('#table-container').classed('active', true)
   geomap.drawGeomap(movies)
+
+  // Empêcher la propagation du scroll global lorsque l'utilisateur interagit avec le tableau
+  const tableContainer = document.getElementById('table-container')
+  const stopScrollPropagation = function (event) {
+    event.stopPropagation() // Empêche la propagation de l'événement de scroll
+  };
+
+  // Ajouter l'écouteur uniquement si la classe "active" est présente
+  if (d3.select('#table-container').classed('active')) {
+    tableContainer.addEventListener('wheel', stopScrollPropagation)
+  }
+
+  // Supprimer l'écouteur lorsque la classe "active" est retirée
+  const observer = new MutationObserver(() => {
+    if (!d3.select('#table-container').classed('active')) {
+      tableContainer.removeEventListener('wheel', stopScrollPropagation)
+      observer.disconnect(); // Arrêter d'observer les mutations
+    }
+  });
+
+  // Observer les changements de classe sur le conteneur
+  observer.observe(tableContainer, { attributes: true, attributeFilter: ['class'] })
 }
 
 /**
  *
  */
 function callFunction5 () {
+  d3.select('.info-container p').text('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
+  d3.select('.bottom-bar h1').text('Which category has the best IMDB mean score ?')
   d3.select('#table-container').classed('active', false)
   const container = d3.select('#button-container')
   container.selectAll('*').remove()
@@ -89,7 +121,7 @@ function callFunction5 () {
 
 // Fonction de gestion du scroll
 let virtualScrollPosition = 0 // Position virtuelle du scroll
-const maxScroll = 1000 // Longueur totale du faux scroll
+const maxScroll = 4000 // Longueur totale du faux scroll
 
 /**
  * @param event
@@ -116,7 +148,7 @@ let lastFunctionIndex = -1 // -1 signifie qu'aucune fonction n'a été appelée 
  * @param scrollPosition
  */
 function updateContentBasedOnScroll (scrollPosition) {
-  const thresholds = [0, 200, 400, 600, 800] // Seuils pour les différentes fonctions
+  const thresholds = [0, 1000, 2000, 3000, 4000] // Seuils pour les différentes fonctions
 
   // Déterminer l'index de la fonction à appeler en fonction de la position du scroll
   let currentFunctionIndex = -1
@@ -155,10 +187,7 @@ function updateContentBasedOnScroll (scrollPosition) {
 }
 
 // Ajouter un écouteur pour la molette de la souris
-window.addEventListener/**
-wwwwwwwwwwwwwwwwwwwwwww *
-wwwwwwwwwwwwwwwwwwwwwww */
-('wheel', handleScroll)
+window.addEventListener('wheel', handleScroll)
 
 export function drawShape () {
   const width = 1000 // Largeur du SVG
