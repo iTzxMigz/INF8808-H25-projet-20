@@ -16,7 +16,7 @@ export function initDropdownAndPlot (topCategories, mergedData) {
     .attr('id', 'stackedDot-toggle-btn')
     .attr('class', 'toolbar-btn')
     .style('margin-right', '10px')
-    .text('Switch to Age Certifications')
+    .text('Switch to Age Ratings')
     .style('font-family', "'Bebas Neue', sans-serif")
 
   const dropdown = div.append('div')
@@ -145,7 +145,7 @@ export function drawStackedDotPlot (topCategories, mergedData) {
    */
   function get_max_stacks (data, { radius = 1, x = d => d } = {}) {
     const circles = data.map((d, i, data) => ({ x: +x(d, i, data), data: d })).sort((a, b) => a.x - b.x)
-    const stackHeightLimit = 600 // Max desired height per stack
+    const stackHeightLimit = 400 // Max desired height per stack
 
     // Compute total number of circles at each x
     const xCounts = new Map()
