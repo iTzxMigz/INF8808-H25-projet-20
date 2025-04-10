@@ -383,7 +383,8 @@ font-size: 1.6vh;
 .cinema-screen svg {
   width: 95%;
   height: 95%;
-  background-color: transparent;
+  background: linear-gradient(to bottom, #f8eadf, #d0c7bb);
+
 }
 
 
@@ -426,7 +427,7 @@ font-size: 1.6vh;
   position: fixed;
   bottom: 0;
   left: 0;
-  width: 100%;
+  width: 95%;
   height: 80px;
   background-color: #141414; /* Couleur de fond */
   color: #fff; /* Couleur du texte */
@@ -446,7 +447,7 @@ font-size: 1.6vh;
 
 .button-container {
   display: flex; /* Aligner les boutons sur une ligne */
-  gap: 10px; /* Espacement entre les boutons */
+  gap: 20px; /* Espacement entre les boutons */
 }
 
 .button-container button {
@@ -464,8 +465,6 @@ font-size: 1.6vh;
   justify-content: space-between;
 }
 
-
-/* VVV Everything you need VVV */
 
 #scroll-down-animation {
   position: absolute;

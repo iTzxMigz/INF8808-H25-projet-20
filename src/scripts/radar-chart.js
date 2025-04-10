@@ -1,8 +1,8 @@
 let currentSort = 'Country Name'
 let ascending = false
 export let isAgeCertMode = true
-export const titleAgerCert = 'Distribution of Age Ratings by Country on Netflix'
-export const titleCategories = 'Distribution of Categories by Country on Netflix'
+export const titleAgerCert = 'Distribution of Age Ratings by Country'
+export const titleCategories = 'Distribution of Categories by Country'
 
 /**
  * @param dataRadarChartAge
@@ -134,8 +134,8 @@ export function drawMultipleRadarCharts (data, isAgeCert) {
   const container = d3.select('#screen')
   container.selectAll('*').remove()
   const numCharts = data.length // Nombre total de graphiques (26)
-  const screenWidth = 900 // Largeur de l'écran
-  const screenHeight = 450 // Hauteur de l'écran
+  const screenWidth = 890 // Largeur de l'écran
+  const screenHeight = 440 // Hauteur de l'écran
   const columns = Math.ceil(Math.sqrt(numCharts)) // Nombre de colonnes dans la grille
   const rows = Math.ceil(numCharts / columns) // Nombre de lignes dans la grille
 

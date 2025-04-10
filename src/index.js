@@ -69,7 +69,7 @@ function callFunction3 () {
   hideTooltip()
   d3.select('#scroll-down-animation').style('display', 'block')
   d3.select('.info-container p').text('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
-  d3.select('.bottom-bar h1').text('Distribution of Age Ratings by Country on Netflix')
+  d3.select('.bottom-bar h1').text('Distribution of Age Ratings by Country')
   const container = d3.select('#button-container')
   container.selectAll('*').remove()
   d3.select('#table-container').classed('active', false)
@@ -130,7 +130,7 @@ function callFunction5 () {
 
 // Fonction de gestion du scroll
 let virtualScrollPosition = 0 // Position virtuelle du scroll
-const maxScroll = 4000 // Longueur totale du faux scroll
+const maxScroll = 3500 // Longueur totale du faux scroll
 
 /**
  * @param event
@@ -158,7 +158,7 @@ let lastFunctionIndex = -1 // -1 signifie qu'aucune fonction n'a été appelée 
  * @param scrollPosition
  */
 function updateContentBasedOnScroll (scrollPosition) {
-  const thresholds = [0, 1000, 2000, 3000, 4000] // Seuils pour les différentes fonctions
+  const thresholds = [0, 875, 1750, 2625, 3500] // Seuils pour les différentes fonctions
 
   // Déterminer l'index de la fonction à appeler en fonction de la position du scroll
   let currentFunctionIndex = -1
@@ -228,12 +228,15 @@ function illuminateSeatsOnScroll(scrollPosition) {
   // Déterminer combien de sièges doivent être éclairés
   const seatsToLight = Math.floor(progress * totalSeats)
 
-  // Éclairer les sièges selon l'ordre pseudo-aléatoire
+  // Éclairer ou assombrir les sièges selon l'ordre pseudo-aléatoire
   seats.forEach((seat, index) => {
     const seatIndex = window.randomOrder.indexOf(index)
     if (seatIndex < seatsToLight && !litSeats.has(index)) {
       seat.classList.add('lit') // Ajouter la classe "lit"
       litSeats.add(index) // Marquer le siège comme éclairé
+    } else if (seatIndex >= seatsToLight && litSeats.has(index)) {
+      seat.classList.remove('lit') // Retirer la classe "lit"
+      litSeats.delete(index) // Marquer le siège comme assombri
     }
   })
 }
