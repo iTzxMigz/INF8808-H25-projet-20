@@ -73,10 +73,33 @@ export function initDropdownAndPlot (topCategories, mergedData) {
    */
   function updatePlot (selectedCategory) {
     const container = d3.select('#screen')
-    container.selectAll('*').remove()
-    container.append('svg')
-    const categoriesToPlot = selectedCategory === 'All' ? topCategories : [selectedCategory]
-    drawStackedDotPlot(categoriesToPlot, mergedData)
+    container.selectAll('*').remove() // Supprime les anciens contenus
+
+    if (selectedCategory === 'All') {
+      container.classed('all-category', true) // Ajoute la classe pour le style en grille
+      const svg = container.append('svg')
+        .attr('width', 1000)
+        .attr('height', 450)
+
+      const gridGroup = svg.append('g')
+        .attr('class', 'grid-group')
+
+      const columns = 4 // Réduit le nombre de colonnes à 3
+      topCategories.forEach((category, index) => {
+        const x = (index % columns) * 333 // Position horizontale dans la grille
+        const y = Math.floor(index / columns) * 150 // Position verticale dans la grille
+
+        const categoryGroup = gridGroup.append('g')
+          .attr('transform', `translate(${x}, ${y})`)
+
+        drawStackedDotPlot([category], mergedData, categoryGroup, 350, 150, 0.9) // Dimensions adaptées
+      })
+    } else {
+      container.classed('all-category', false) // Supprime la classe pour le style en grille
+      container.append('svg')
+      const categoriesToPlot = [selectedCategory]
+      drawStackedDotPlot(categoriesToPlot, mergedData)
+    }
   }
 
   d3.select('#stackedDot-toggle-btn').on('click', () => {
@@ -95,10 +118,15 @@ export function initDropdownAndPlot (topCategories, mergedData) {
 /**
  * @param topCategories
  * @param mergedData
+ * @param svgGroup
+ * @param width
+ * @param height
  */
-export function drawStackedDotPlot (topCategories, mergedData) {
-  const width = 900; const height = 450; const margin = 40
-  const radius = 3
+export function drawStackedDotPlot (topCategories, mergedData, svgGroup = null, width = 900, height = 450, radius = 3) {
+  const container = svgGroup || d3.select('#screen').select('svg')
+  container.selectAll('*').remove() // Supprime les anciens contenus avant de dessiner
+
+  const margin = 40
 
   let x
   if (isIMDB) {
@@ -115,11 +143,6 @@ export function drawStackedDotPlot (topCategories, mergedData) {
 
   const categorySpacing = height + margin
   const svgHeight = categorySpacing * topCategories.length
-  const container = d3.select('#screen')
-  container.selectAll('*').remove()
-  const svg = container.append('svg')
-    .attr('width', width)
-    .attr('height', svgHeight)
 
   let tooltip = d3.select('body').select('.tooltip')
   if (tooltip.empty()) {
@@ -229,8 +252,7 @@ export function drawStackedDotPlot (topCategories, mergedData) {
     filteredMovies.sort((a, b) => a.Type.localeCompare(b.Type))
     const yOffset = index * categorySpacing
 
-    const categoryGroup = svg.append('g')
-      .attr('transform', `translate(0, ${yOffset})`)
+    const categoryGroup = container.append('g')
 
     categoryGroup
       .selectAll('circle')
