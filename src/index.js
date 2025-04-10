@@ -2,85 +2,229 @@
 
 import * as preproc from './scripts/preprocess.js'
 import * as radarChart from './scripts/radar-chart.js'
-import * as stackBarChart from './scripts/stack-barchart.js'
-import * as heatmap from './scripts/heatmap.js'
+import { drawStackedBarChart } from './scripts/stack-barchart.js'
+import { drawHeatmap } from './scripts/heatmap.js'
 import * as geomap from './scripts/geomap.js'
 import * as stackDotPlot from './scripts/stacked-dot-plot.js'
 
-/**
- * @file This file is the entry-point for the the code for Projet for the course INF8808.
- * @author Team Projet 20
- * @version v1.0.0
- */
+let chartData, heatmapData, dataRadarChartAge, dataRadarChartCat, movies, dataStackedDotPlot;
 
+// Fonction principale
 (function (d3) {
-  d3.csv('/netflix.csv', d3.autoType).then(function(data) {
-    let movies = preproc.getMoviesAndSeries(data);
-    let filterMoviesSeriesByYear = preproc.getFilterMoviesSeriesByYear(movies);
-    let chartData = Array.from(filterMoviesSeriesByYear, ([year, values]) => ({
+  d3.csv('/netflix.csv', d3.autoType).then(function (data) {
+    movies = preproc.getMoviesAndSeries(data)
+    const filterMoviesSeriesByYear = preproc.getFilterMoviesSeriesByYear(movies)
+    chartData = Array.from(filterMoviesSeriesByYear, ([year, values]) => ({
       year: +year,
       Movies: values.Movies,
       TVShows: values.TVShows
-    })).sort((a, b) => a.year - b.year);
-    drawShape(5);
-    stackBarChart.drawStackedBarChart(chartData);
-    let resultHeatmap = preproc.processCategoriesForHeatmap(movies, filterMoviesSeriesByYear);
-    let heatmapData = resultHeatmap.heatmapData
-    let categoriesList = resultHeatmap.sortedCategories
-    let dataStackedDotPlot = preproc.prepareStackedDotPlotData(movies);
-    heatmap.drawHeatmap(heatmapData);
-    let radarObject = preproc.preprocessRadarChart(movies, categoriesList);
-    let dataRadarChartAge = preproc.prepareRadarChartData(radarObject.radarAgeCert, "ageCert");
-    let dataRadarChartCat = preproc.prepareRadarChartData(radarObject.radarCategories, "");
-    radarChart.createChangingModeButton(dataRadarChartAge, dataRadarChartCat);
-    radarChart.drawMultipleRadarCharts(dataRadarChartAge, true);
-    geomap.drawGeomap(movies);
-    stackDotPlot.initDropdownAndPlot(dataStackedDotPlot.categories, dataStackedDotPlot.data);
-    changingTitleDynamically();
-  });
+    })).sort((a, b) => a.year - b.year)
 
+    drawShape()
 
+    const resultHeatmap = preproc.processCategoriesForHeatmap(movies, filterMoviesSeriesByYear)
+    heatmapData = resultHeatmap.heatmapData
+    const categoriesList = resultHeatmap.sortedCategories
+
+    dataStackedDotPlot = preproc.prepareStackedDotPlotData(movies)
+    const radarObject = preproc.preprocessRadarChart(movies, categoriesList)
+    dataRadarChartAge = preproc.prepareRadarChartData(radarObject.radarAgeCert, 'ageCert')
+    dataRadarChartCat = preproc.prepareRadarChartData(radarObject.radarCategories, '')
+
+    // Ajouter un écouteur d'événement pour le scroll
+    window.addEventListener('scroll', handleScroll)
+    callFunction1() // Appeler la première fonction au chargement de la page
+  })
 })(d3)
 
-function drawShape(numberOfGraph) {
-   for (let i = 0; i < numberOfGraph; i++) {
-      const div = d3.select("main")
-         .append("div")
-            .attr("class", "viz-container")
-            .attr("id", `viz-container-${i + 1}`);
-      div.append("div")
-         .attr("class", "graph")
-         .attr("id", `graph-${i + 1}`)
-   }
+// Sous-fonctions accessibles globalement
+/**
+ *
+ */
+function callFunction1 () {
+  d3.select('.info-container p').text('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
+  d3.select('.bottom-bar h1').text('Movies and Series added to Netflix by year')
+  d3.select('#table-container').classed('active', false)
+  drawStackedBarChart(chartData)
 }
 
-function changingTitleDynamically() {
-  const headerTitle = d3.select("header h1");
+/**
+ *
+ */
+function callFunction2 () {
+  d3.select('.info-container p').text('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
+  d3.select('.bottom-bar h1').text('Distribution of categories per year on Netflix')
+  const container = d3.select('#button-container')
+  container.selectAll('*').remove()
+  d3.select('#table-container').classed('active', false)
+  drawHeatmap(heatmapData)
+}
 
-let titlesByViz = {
-  "viz-container-1": "Movies and Series added to Netflix by year",
-  "viz-container-2": "Distribution of Categories per year on Netflix",
-  "viz-container-3": () => radarChart.isAgeCertMode? radarChart.titleAgerCert : radarChart.titleCategories,
-  "viz-container-4": "Content Production and IMDb Scores by Country on Netflix",
-  "viz-container-5": () => stackDotPlot.isIMDB? stackDotPlot.titleIMDB : stackDotPlot.titleAge,
-  // ajoute d'autres si tu veux
-};
+/**
+ *
+ */
+function callFunction3 () {
+  d3.select('.info-container p').text('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
+  d3.select('.bottom-bar h1').text('Distribution of Age Ratings by Country on Netflix')
+  const container = d3.select('#button-container')
+  container.selectAll('*').remove()
+  d3.select('#table-container').classed('active', false)
+  radarChart.createChangingModeButton(dataRadarChartAge, dataRadarChartCat)
+  radarChart.drawMultipleRadarCharts(dataRadarChartAge, true)
+}
 
-window.addEventListener("scroll", () => {
-  d3.selectAll(".viz-container").each(function() {
-    const rect = this.getBoundingClientRect();
-    const height = window.innerHeight
+/**
+ *
+ */
+function callFunction4 () {
+  d3.select('.info-container p').text('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
+  d3.select('.bottom-bar h1').text('Content Production and IMDb Scores by Country on Netflix')
+  const container = d3.select('#button-container')
+  container.selectAll('*').remove()
+  d3.select('#table-container').classed('active', true)
+  geomap.drawGeomap(movies)
 
-    if (rect.top < height / 4 && rect.bottom > height - height / 4) {
-      const id = this.id;
-      const title = typeof titlesByViz[id] === "function"
-      ? titlesByViz[id]()
-      : titlesByViz[id];
-      if (title) {
-        headerTitle.text(title);
-      }
+  // Empêcher la propagation du scroll global lorsque l'utilisateur interagit avec le tableau
+  const tableContainer = document.getElementById('table-container')
+  const stopScrollPropagation = function (event) {
+    event.stopPropagation() // Empêche la propagation de l'événement de scroll
+  }
+
+  // Ajouter l'écouteur uniquement si la classe "active" est présente
+  if (d3.select('#table-container').classed('active')) {
+    tableContainer.addEventListener('wheel', stopScrollPropagation)
+  }
+
+  // Supprimer l'écouteur lorsque la classe "active" est retirée
+  const observer = new MutationObserver(() => {
+    if (!d3.select('#table-container').classed('active')) {
+      tableContainer.removeEventListener('wheel', stopScrollPropagation)
+      observer.disconnect() // Arrêter d'observer les mutations
     }
-  });
-});
+  })
 
+  // Observer les changements de classe sur le conteneur
+  observer.observe(tableContainer, { attributes: true, attributeFilter: ['class'] })
+}
+
+/**
+ *
+ */
+function callFunction5 () {
+  d3.select('.info-container p').text('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
+  d3.select('.bottom-bar h1').text('Which category has the best IMDB mean score ?')
+  d3.select('#table-container').classed('active', false)
+  const container = d3.select('#button-container')
+  container.selectAll('*').remove()
+  stackDotPlot.initDropdownAndPlot(dataStackedDotPlot.categories, dataStackedDotPlot.data)
+}
+
+// Fonction de gestion du scroll
+let virtualScrollPosition = 0 // Position virtuelle du scroll
+const maxScroll = 4000 // Longueur totale du faux scroll
+
+/**
+ * @param event
+ */
+function handleScroll (event) {
+  // Détecter la direction du scroll
+  if (event.deltaY > 0 && virtualScrollPosition < maxScroll) {
+    virtualScrollPosition += 20 // Scroller vers le bas
+  } else if (event.deltaY < 0 && virtualScrollPosition > 0) {
+    virtualScrollPosition -= 20 // Scroller vers le haut
+  }
+
+  // Limiter la position virtuelle entre 0 et maxScroll
+  virtualScrollPosition = Math.max(0, Math.min(virtualScrollPosition, maxScroll))
+
+  // Appeler les fonctions en fonction de la position virtuelle
+  updateContentBasedOnScroll(virtualScrollPosition)
+  illuminateSeatsOnScroll(virtualScrollPosition)
+}
+
+// Variable pour suivre la dernière fonction appelée
+let lastFunctionIndex = -1 // -1 signifie qu'aucune fonction n'a été appelée encore
+
+/**
+ * @param scrollPosition
+ */
+function updateContentBasedOnScroll (scrollPosition) {
+  const thresholds = [0, 1000, 2000, 3000, 4000] // Seuils pour les différentes fonctions
+
+  // Déterminer l'index de la fonction à appeler en fonction de la position du scroll
+  let currentFunctionIndex = -1
+  for (let i = 0; i < thresholds.length; i++) {
+    if (scrollPosition >= thresholds[i] && (i === thresholds.length - 1 || scrollPosition < thresholds[i + 1])) {
+      currentFunctionIndex = i
+      break
+    }
+  }
+
+  // Si l'index actuel est différent de l'index précédent, appeler la fonction correspondante
+  if (currentFunctionIndex !== lastFunctionIndex) {
+    lastFunctionIndex = currentFunctionIndex // Mettre à jour l'index précédent
+
+    // Appeler la fonction correspondante
+    switch (currentFunctionIndex) {
+      case 0:
+        callFunction1()
+        break
+      case 1:
+        callFunction2()
+        break
+      case 2:
+        callFunction3()
+        break
+      case 3:
+        callFunction4()
+        break
+      case 4:
+        callFunction5()
+        break
+      default:
+        console.log('Aucune fonction à appeler')
+    }
+  }
+}
+
+// Ajouter un écouteur pour la molette de la souris
+window.addEventListener('wheel', handleScroll)
+
+export function drawShape () {
+  const width = 1000 // Largeur du SVG
+  const height = 400 // Hauteur du SVG
+
+  // Sélectionner la div avec l'ID "screen" et y ajouter un SVG
+  d3.select('#screen')
+    .append('svg')
+    .attr('width', width)
+    .attr('height', height)
+}
+
+// Tableau global pour suivre les sièges déjà éclairés
+const litSeats = new Set()
+
+function illuminateSeatsOnScroll(scrollPosition) {
+  const seats = Array.from(document.querySelectorAll('.seat')) // Récupérer tous les sièges
+  const totalSeats = seats.length
+
+  // Générer un ordre pseudo-aléatoire pour les sièges (une seule fois)
+  if (!window.randomOrder) {
+    window.randomOrder = [...Array(totalSeats).keys()].sort(() => Math.random() - 0.5)
+  }
+
+  // Calculer la progression du scroll
+  const progress = Math.min(scrollPosition / maxScroll, 1) // Progression entre 0 et 1
+
+  // Déterminer combien de sièges doivent être éclairés
+  const seatsToLight = Math.floor(progress * totalSeats)
+
+  // Éclairer les sièges selon l'ordre pseudo-aléatoire
+  seats.forEach((seat, index) => {
+    const seatIndex = window.randomOrder.indexOf(index)
+    if (seatIndex < seatsToLight && !litSeats.has(index)) {
+      seat.classList.add('lit') // Ajouter la classe "lit"
+      litSeats.add(index) // Marquer le siège comme éclairé
+    }
+  })
 }

@@ -1,38 +1,48 @@
 body {
     font-family: 'Roboto Slab', 'sans-serif';
     font-size: 1.6vh;
-    background-color: #fff;
+    background: #111;
     color: #2A2B2E;
     margin: 0;
     width: 100vw;
-    overflow-y: scroll;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    
 }
 
-header {
-    background-color: #fff;
-    padding-top: 2vh;
-    padding-bottom: 2vh;
-    padding-left: 5vw;
-    padding-right: 5vw;
-    height: 10vh;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    border-bottom: 2px solid #97939A;
+p {
+    font-family: 'Roboto Slab', 'sans-serif';
+    font-size: 2vh;
+    color: #fff;
+    margin: 0;
+    opacity: 0.8;
 }
 
-main {
-    height: 100%;
-    padding-right: 25px;
+.layout {
+  display: flex; /* Utilisation de Flexbox pour aligner les colonnes */
+  width: 100%;
+  height: 100%; /* S'étend sur toute la hauteur */
 }
+
+/* Colonne gauche : Théâtre */
+.left-column {
+  flex: 3; /* Prend 3 parts de l'espace disponible */
+  padding: 20px;
+}
+
+/* Colonne droite : Table */
+.right-column {
+  flex: 1; /* Prend 1 part de l'espace disponible */
+  padding: 20px;
+}
+
 
 h1 {
-    color: #2A2B2E;
+    color: ##ffff;
     font-family: 'Roboto Slab', 'serif';
-    font-size: 5.6vh;
+    font-size: 8vh;
     margin: 0;
     font-weight: normal;
 }
@@ -48,10 +58,6 @@ h2 {
     font-weight: normal;
 }
 
-svg {
-    background-color: #ffffff;
-}
-
 .header {
     display:flex;
     justify-content: space-between;
@@ -63,26 +69,6 @@ svg {
     text-anchor: middle;
 }
 
-.viz-container{
-    position: relative;
-    overflow: hidden;
-    height: 85vh;
-    padding-left: 5vw;
-    padding-right: 5vw;
-    display:flex;
-    flex-direction: column;
-    align-items: center;
-}
-#viz-container-5{
-  position: relative;
-  overflow: visible;
-  height: 85vh;
-  padding-left: 5vw;
-  padding-right: 5vw;
-  display:flex;
-  flex-direction: column;
-  align-items: center;
-}
 
 /* Dropdown Button */
   
@@ -117,15 +103,17 @@ font-size: 1.6vh;
   
 /* Dropdown content */
 .dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #141414;
-    border: 1px solid #e50914;
-    min-width: 20vw;
-    z-index: 1;
-    border-radius: 4px;
-    margin-top: 0.5vh;
-  }
+  display: none;
+  position: absolute;
+  background-color: #141414;
+  border: 1px solid #e50914;
+  min-width: 20vw;
+  z-index: 1;
+  border-radius: 4px;
+  margin-top: 0.5vh; /* Supprimez cette ligne si elle existe */
+  bottom: 100%; /* Positionne le contenu au-dessus du bouton */
+  margin-bottom: 0.5vh; /* Ajoute un petit espace entre le bouton et le contenu */
+}
   
   /* Dropdown options */
   .dropdown-option {
@@ -148,32 +136,8 @@ font-size: 1.6vh;
   .dropdown-option:active {
     background-color: #b20710; /* Netflix deep red on click */
   }
-/* .graph {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-} */
 
-.graph {
-    width: 100%;
-    height: 100%;
-    display: grid;
-    gap: 10px;
-    justify-items: center;
-    align-items: center;
-}
 
-#graph-3 {
-    width: 100%;
-    height: 100%;
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
-    justify-items: center;
-    align-items: center;
-}
 
 .container-radar {
     display: flex;
@@ -206,31 +170,297 @@ font-size: 1.6vh;
 
   tr.highlight {
     font-weight: bolder;
+    background-color: rgba(255, 0, 0, 0.2);
   }
   
   #country-table {
     scrollbar-width: thin;
-    scrollbar-color: rgba(100, 100, 100, 0.4) transparent;
+    scrollbar-color: rgba(100, 100, 100, 0.8) transparent;
     position: relative;
   }
+
+/* Design du cinéma*/
+.theatre {
+  display: flex;
+  position: absolute;
+  top: 80%;
+  left: 35%;
+  transform: translate(-50%, -50%);
+}
+
+.cinema-seats {
+  display: flex;
+}
+
+/* Left Seats*/
+.left {
   
- #graph-4 #country-table::-webkit-scrollbar {
-  width: 8px !important;
+  .cinema-row {
+    transform: skew(-15deg);
+    margin: 0 6px;
+  }
+
+  .seat {
+    width: 45px;     
+    height: 65px;   
+    border-radius: 7px;
+    background: linear-gradient(to top, #4d0f0f, #4d0f0f, #4d0f0f, #4d0f0f, #4d0f0f, #8a2e2e, #c34a4c);
+    margin-bottom: 12px;  /* Légèrement augmenté pour l'espacement */
+    transform: skew(20deg);
+    margin-top: -32px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5)
+  }
+  .seat.lit {
+    background: linear-gradient(to top, #761818, #761818, #761818, #761818, #761818, #B54041,  #F3686A);
+  }
+  .row-2 {
+    transform: skew(-13deg);
+
+    .seat {
+      transform: skew(18deg);
+    }
+  }
+
+  .row-3 {
+    transform: skew(-12deg);
+
+    .seat {
+      transform: skew(16deg);
+    }
+  }
+
+  .row-4 {
+    transform: skew(-11deg);
+
+    .seat {
+      transform: skew(15deg);
+    }
+  }
+
+  .row-5 {
+    transform: skew(-10deg);
+
+    .seat {
+      transform: skew(12deg);
+    }
+  }
+
+  .row-6 {
+    transform: skew(-9deg);
+
+    .seat {
+      transform: skew(10deg);
+    }
+  }
+
+  .row-7 {
+    transform: skew(-7deg);
+
+    .seat {
+      transform: skew(8deg);
+    }
+  }
+  .row-8 {
+    transform: skew(-5deg);
+
+    .seat {
+      transform: skew(6deg);
+    }
+  } 
 }
 
-#graph-4 #country-table::-webkit-scrollbar-track {
-  background: transparent !important;
+
+
+
+
+/* Left Seats*/
+.right {
+  margin-left: 90px;  /* Augmenté de 70px à 90px pour compenser les sièges plus larges */
+  
+  .cinema-row {
+    transform: skew(7deg);
+    margin: 0 6px;
+  }
+
+  .seat {
+    width: 45px;     /* Augmenté de 35px à 45px */
+    height: 65px;    /* Augmenté de 50px à 65px */
+    border-radius: 7px;
+    background: linear-gradient(to top, #4d0f0f, #4d0f0f, #4d0f0f, #4d0f0f, #4d0f0f, #8a2e2e, #c34a4c);
+    margin-bottom: 12px;  /* Légèrement augmenté pour l'espacement */
+    transform: skew(-8deg);
+    margin-top: -32px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5)
+  }
+  .seat.lit {
+    background: linear-gradient(to top, #761818, #761818, #761818, #761818, #761818, #B54041,  #F3686A);
+  }
+  .row-2 {
+    z-index: 6;
+    transform: skew(9deg);
+
+    .seat {
+      transform: skew(-10deg);
+    }
+  }
+
+  .row-3 {
+    z-index: 5;
+    transform: skew(10deg);
+
+    .seat {
+      transform: skew(-12deg);
+    }
+  }
+
+  .row-4 {
+    z-index: 4;
+    transform: skew(11deg);
+
+    .seat {
+      transform: skew(-15deg);
+    }
+  }
+
+  .row-5 {
+    z-index: 3;
+    transform: skew(12deg);
+
+    .seat {
+      transform: skew(-16deg);
+    }
+  }
+
+  .row-6 {
+    z-index: 2;
+    transform: skew(13deg);
+
+    .seat {
+      transform: skew(-18deg);
+    }
+  }
+
+  .row-7 {
+    z-index: 1;
+    transform: skew(15deg);
+
+    .seat {
+      transform: skew(-20deg);
+    }
+  } 
+  .row-8 {
+    z-index: 0;
+    transform: skew(17deg);
+
+    .seat {
+      transform: skew(-22deg);
+    }
+  }
 }
 
-#graph-4 #country-table::-webkit-scrollbar-thumb {
-  background-color: rgba(100, 100, 100, 0.4) !important;
-  border-radius: 9999px !important; /* Fully rounded */
-  border: 2px solid transparent !important;
-  background-clip: content-box !important;
+
+.cinema-screen {
+  position: absolute;
+  width: 1000px;
+  height: 450px;
+  background: linear-gradient(to bottom, #f8eadf, #d0c7bb);
+  border-radius: 3px;
+  box-shadow: 0 0 60px rgba(97, 92, 87, 0.5);
+  transform: perspective(800px) rotateX(-3deg);
+  border: 1px solid #444;
+  top: -500px;
+  left: 50%;
+  transform-origin: center bottom;
+  margin-left: -500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }
 
-#graph-4 #country-table::-webkit-scrollbar-button {
-  display: none !important;
-  height: 0 !important;
-  width: 0 !important;
+
+/* Cette partie assure que les SVG s'adaptent correctement à l'écran */
+.cinema-screen svg {
+  width: 95%;
+  height: 95%;
+  background-color: transparent;
 }
+
+
+#screen {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 45px;
+  justify-items: center;
+  align-items: center;
+  padding: 20px;
+  row-gap: 5px;
+}
+
+.container-radar {
+  width: 200px;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.table-container.active {
+  z-index: 2;
+  opacity: 0.9;
+  margin-right: -28%;
+  margin-top: 12%;
+  width: 100%;
+  height: 420px;
+  overflow-y: scroll;
+  color: white;
+}
+
+.table-container{
+  opacity: 0;
+  z-index: 0;
+}
+
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  background-color: #141414; /* Couleur de fond */
+  color: #fff; /* Couleur du texte */
+  display: flex; /* Utilisation de Flexbox */
+  justify-content: space-between; /* Espacement entre les éléments */
+  align-items: center; /* Centrer les éléments verticalement */
+  padding: 0 20px; /* Espacement interne */
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.5); /* Ombre pour un effet de profondeur */
+  z-index: 1000; /* Assurez-vous qu'elle est au-dessus des autres éléments */
+}
+
+.bottom-bar h1 {
+  margin: 0;
+  font-size: 50px;
+  font-family: 'Bebas Neue', sans-serif;
+}
+
+.button-container {
+  display: flex; /* Aligner les boutons sur une ligne */
+  gap: 10px; /* Espacement entre les boutons */
+}
+
+.button-container button {
+  font-size: 20px; /* Taille de la police */
+}
+#fixed-container {
+  position: fixed; /* Fixe le conteneur à la fenêtre */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* Empêche le contenu de déborder */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+

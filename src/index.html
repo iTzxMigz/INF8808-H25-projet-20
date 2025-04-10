@@ -14,17 +14,170 @@
       </head>
 
       <body>
-        <header>
-          <div class="header">
-            <h1>
-              Movies and Series added to Netflix by year
-            </h1>
-            <img class="img_netflix" src="logo/netflix-logo.png" alt="logo">
-          </div>
-        </header>
+        <div id="fixed-container">
         <main>
+          <div class="layout">
+            <div class="column left-column">
+              <div class="theatre">
+                <!-- Écran de cinéma à ajouter ici -->
+                <div class="cinema-screen" id="screen">
+                  <!-- Les SVG seront placés ici -->
+                </div>
+                <div class="cinema-seats left">
+                  <div class="cinema-row row-1">
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                  </div>
+              
+                  <div class="cinema-row row-2">
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                  </div>
+              
+                  <div class="cinema-row row-3">
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                  </div>
+              
+                  <div class="cinema-row row-4">
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                  </div>
+              
+                  <div class="cinema-row row-5">
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                  </div>
+              
+                  <div class="cinema-row row-6">
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                  </div>
+              
+                  <div class="cinema-row row-7">
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                  </div>
+
+                  <div class="cinema-row row-8">
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                  </div>
+                </div>
+              
+              
+                <div class="cinema-seats right">
+                  <div class="cinema-row row-1">
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                  </div>
+              
+                  <div class="cinema-row row-2">
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                  </div>
+              
+                  <div class="cinema-row row-3">
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                  </div>
+              
+                  <div class="cinema-row row-4">
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                  </div>
+              
+                  <div class="cinema-row row-5">
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                  </div>
+              
+                  <div class="cinema-row row-6">
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                  </div>
+              
+                  <div class="cinema-row row-7">
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                  </div>
+
+                  <div class="cinema-row row-8">
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                    <div class="seat"></div>
+                  </div>
+                </div>
+                
+              </div>
+            </div>
+            <div class="column right-column">
+              <br><br>
+              <div class="info-container">
+                <p></p>
+              </div>
+              <!-- Contenu de la colonne droite (si nécessaire) -->
+              <div class="table-container" id="table-container">
+                <!-- Contenu de table ajouté par D3 -->
+              </div>
+            </div>
+          </div>
         </main>
+        <div class="bottom-bar">
+          <h1></h1>
+          <div class="button-container" id="button-container" style="margin-right: 0px;">
+            <!-- Les boutons seront ajoutés ici -->
+          </div>
+        </div>
         <script src="https://d3js.org/d3.v7.js"></script>
         <script type="module" src="index.js"></script>
+      </div>
       </body>
 </html>
