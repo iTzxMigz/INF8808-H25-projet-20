@@ -84,7 +84,7 @@ export function initDropdownAndPlot (topCategories, mergedData) {
       const gridGroup = svg.append('g')
         .attr('class', 'grid-group')
 
-      const columns = 4 // Réduit le nombre de colonnes à 3
+      const columns = 3 // Réduit le nombre de colonnes à 3
       topCategories.forEach((category, index) => {
         const x = (index % columns) * 333 // Position horizontale dans la grille
         const y = Math.floor(index / columns) * 150 // Position verticale dans la grille
@@ -92,13 +92,13 @@ export function initDropdownAndPlot (topCategories, mergedData) {
         const categoryGroup = gridGroup.append('g')
           .attr('transform', `translate(${x}, ${y})`)
 
-        drawStackedDotPlot([category], mergedData, categoryGroup, 350, 150, 0.9) // Dimensions adaptées
+        drawStackedDotPlot([category], topCategories, mergedData, categoryGroup, 350, 150, 1.1) // Dimensions adaptées
       })
     } else {
       container.classed('all-category', false) // Supprime la classe pour le style en grille
       container.append('svg')
       const categoriesToPlot = [selectedCategory]
-      drawStackedDotPlot(categoriesToPlot, mergedData)
+      drawStackedDotPlot(categoriesToPlot, topCategories, mergedData)
     }
   }
 
@@ -112,19 +112,97 @@ export function initDropdownAndPlot (topCategories, mergedData) {
     updatePlot(category)
   })
   const category = d3.select('#button-container #dropdown-btn').text()
-  drawStackedDotPlot([category], mergedData)
+  drawStackedDotPlot([category], topCategories, mergedData)
 }
 
 /**
+ * @param x 
  * @param topCategories
  * @param mergedData
+ */
+export function determineStacks(x, topCategories, mergedData, radius, height) {
+  /**
+ * @param data
+ * @param root0
+ * @param root0.radius
+ * @param root0.x
+ */
+  function get_max_stacks (data, { radius = 1, x = d => d } = {}, stackHeightLimit) {
+    const circles = data.map((d, i, data) => ({ x: +x(d, i, data), data: d })).sort((a, b) => a.x - b.x)
+
+    // Compute total number of circles at each x
+    const xCounts = new Map()
+    circles.forEach(b => {
+      xCounts.set(b.x, (xCounts.get(b.x) || 0) + 1)
+    })
+
+    // Compute required stacks for each x
+    const xStackCount = new Map()
+    xCounts.forEach((count, xValue) => {
+      const stacksNeeded = Math.ceil(count * radius / stackHeightLimit)
+      xStackCount.set(xValue, stacksNeeded)
+    })
+
+    const largestEntry = [...xStackCount.entries()].reduce((max, entry) => entry[1] > max[1] ? entry : max)
+
+    return largestEntry
+  }
+
+  const largestStacks = new Map()
+  topCategories.forEach((category, index) => {
+    let filteredMovies = mergedData.filter(d => d.Listed_in.includes(category))
+    filteredMovies = isIMDB ? filteredMovies : filteredMovies.filter(d => d.AgeCertification != null)
+    filteredMovies.sort((a, b) => a.Type.localeCompare(b.Type))
+    const large = get_max_stacks(filteredMovies, { radius: radius * 2, x: d => isIMDB ? x(d.Score) : x(d.AgeCertification) }, height)
+    largestStacks.set(category, large)
+  })
+  const maxValue = Math.max(...[...largestStacks.values()].map(v => v[1]))
+  return maxValue;
+}
+
+/**
+ * @param categoryToPlot
+ * @param topCategories
+ * @param mergedData
+ * @param maxValue
  * @param svgGroup
  * @param width
  * @param height
  */
-export function drawStackedDotPlot (topCategories, mergedData, svgGroup = null, width = 900, height = 450, radius = 3) {
+export function drawStackedDotPlot (categoryToPlot, topCategories, mergedData, svgGroup = null, width = 900, height = 450, radius = 3) {
   const container = svgGroup || d3.select('#screen').select('svg')
   container.selectAll('*').remove() // Supprime les anciens contenus avant de dessiner
+
+  let legend = d3.select('body').select('.legend')
+  if (legend.empty()) {
+    legend = d3.select('#screen').select('svg').append('g')
+      .attr('class', 'legend')
+      .attr('transform', `translate(875, 20)`)
+
+    const legendData = [
+      { type: 'Movies', color: '#E50914' },
+      { type: 'TV Show', color: '#221F1F' }
+    ]
+
+    legend.selectAll('rect')
+      .data(legendData)
+      .join('rect')
+      .attr('x', 0)
+      .attr('y', (d, i) => i * 20)
+      .attr('width', 15)
+      .attr('height', 15)
+      .attr('fill', d => d.color)
+
+    legend.selectAll('text')
+      .data(legendData)
+      .join('text')
+      .attr('x', 24)
+      .attr('y', (d, i) => i * 20 + 14)
+      .text(d => d.type)
+      .attr('font-family', "'Bebas Neue', sans-serif")
+      .attr('font-size', '18px')
+      .attr('fill', '#000')
+  }
 
   const margin = 40
 
@@ -160,34 +238,6 @@ export function drawStackedDotPlot (topCategories, mergedData, svgGroup = null, 
       .style('pointer-events', 'none')
       .style('opacity', 0)
       .style('z-index', 10)
-  }
-
-  /**
-   * @param data
-   * @param root0
-   * @param root0.radius
-   * @param root0.x
-   */
-  function get_max_stacks (data, { radius = 1, x = d => d } = {}) {
-    const circles = data.map((d, i, data) => ({ x: +x(d, i, data), data: d })).sort((a, b) => a.x - b.x)
-    const stackHeightLimit = 400 // Max desired height per stack
-
-    // Compute total number of circles at each x
-    const xCounts = new Map()
-    circles.forEach(b => {
-      xCounts.set(b.x, (xCounts.get(b.x) || 0) + 1)
-    })
-
-    // Compute required stacks for each x
-    const xStackCount = new Map()
-    xCounts.forEach((count, xValue) => {
-      const stacksNeeded = Math.ceil(count * radius / stackHeightLimit)
-      xStackCount.set(xValue, stacksNeeded)
-    })
-
-    const largestEntry = [...xStackCount.entries()].reduce((max, entry) => entry[1] > max[1] ? entry : max)
-
-    return largestEntry
   }
 
   /**
@@ -235,18 +285,10 @@ export function drawStackedDotPlot (topCategories, mergedData, svgGroup = null, 
     return circles
   }
 
-  const largestStacks = new Map()
-  topCategories.forEach((category, index) => {
-    let filteredMovies = mergedData.filter(d => d.Listed_in.includes(category))
-    filteredMovies = isIMDB ? filteredMovies : filteredMovies.filter(d => d.AgeCertification != null)
-    filteredMovies.sort((a, b) => a.Type.localeCompare(b.Type))
-    const large = get_max_stacks(filteredMovies, { radius: radius * 2, x: d => isIMDB ? x(d.Score) : x(d.AgeCertification) })
-    largestStacks.set(category, large)
-  })
+  const maxValue = determineStacks(x, topCategories, mergedData, radius, height-50);
+  console.log(maxValue)
 
-  const maxValue = Math.max(...[...largestStacks.values()].map(v => v[1]))
-
-  topCategories.forEach((category, index) => {
+  categoryToPlot.forEach((category, index) => {
     let filteredMovies = mergedData.filter(d => d.Listed_in.includes(category))
     filteredMovies = isIMDB ? filteredMovies : filteredMovies.filter(d => d.AgeCertification != null)
     filteredMovies.sort((a, b) => a.Type.localeCompare(b.Type))
@@ -255,6 +297,7 @@ export function drawStackedDotPlot (topCategories, mergedData, svgGroup = null, 
     const categoryGroup = container.append('g')
 
     categoryGroup
+      .attr('class', 'category')
       .selectAll('circle')
       .data(dodge(filteredMovies, { radius: radius * 2, x: d => isIMDB ? x(d.Score) : x(d.AgeCertification) }, maxValue))
       .join('circle')
@@ -296,6 +339,7 @@ export function drawStackedDotPlot (topCategories, mergedData, svgGroup = null, 
       .call(isIMDB ? d3.axisBottom(x).ticks(5).tickSizeOuter(0) : d3.axisBottom(x))
       .style('font-family', "'Bebas Neue', sans-serif")
 
+    /**
     categoryGroup.append('text')
       .attr('x', width / 2)
       .attr('y', height + 15)
@@ -303,33 +347,6 @@ export function drawStackedDotPlot (topCategories, mergedData, svgGroup = null, 
       .style('font-size', '12px')
       .style('font-weight', 'bold')
       .style('font-family', "'Bebas Neue', sans-serif")
-
-    const legend = categoryGroup.append('g')
-      .attr('class', 'legend')
-      .attr('transform', `translate(${width - 100}, 20)`)
-
-    const legendData = [
-      { type: 'Movies', color: '#E50914' },
-      { type: 'TV Show', color: '#221F1F' }
-    ]
-
-    legend.selectAll('rect')
-      .data(legendData)
-      .join('rect')
-      .attr('x', 0)
-      .attr('y', (d, i) => i * 20)
-      .attr('width', 15)
-      .attr('height', 15)
-      .attr('fill', d => d.color)
-
-    legend.selectAll('text')
-      .data(legendData)
-      .join('text')
-      .attr('x', 24)
-      .attr('y', (d, i) => i * 20 + 14)
-      .text(d => d.type)
-      .attr('font-family', "'Bebas Neue', sans-serif")
-      .attr('font-size', '18px')
-      .attr('fill', '#000')
+      */
   })
 }
