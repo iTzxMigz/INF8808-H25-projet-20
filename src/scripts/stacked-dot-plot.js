@@ -79,7 +79,7 @@ export function initDropdownAndPlot (topCategories, mergedData) {
 
   d3.select('#stackedDot-toggle-btn').on('click', () => {
     isIMDB = !isIMDB
-    d3.select('header h1').text(isIMDB ? titleIMDB : titleAge)
+    d3.select('.bottom-bar h1').text(isIMDB ? titleIMDB : titleAge)
     d3.select('#stackedDot-toggle-btn').text(
       isIMDB ? 'Switch to Age Ratings' : 'Switch to IMDB Scores'
     )

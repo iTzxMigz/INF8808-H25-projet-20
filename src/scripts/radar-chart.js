@@ -48,7 +48,7 @@ export function createChangingModeButton (dataRadarChartAge, dataRadarChartCat) 
 
   d3.select('#radar-toggle-btn').on('click', () => {
     isAgeCertMode = !isAgeCertMode
-    d3.select('header h1').text(isAgeCertMode ? titleAgerCert : titleCategories)
+    d3.select('.bottom-bar h1').text(isAgeCertMode ? titleAgerCert : titleCategories)
     d3.select('#radar-toggle-btn').text(
       isAgeCertMode ? 'Switch to Categories' : 'Switch to Age Ratings'
     )
@@ -60,6 +60,7 @@ export function createChangingModeButton (dataRadarChartAge, dataRadarChartCat) 
     d3.select('#dropdown-btn').text(getSortLabel(currentSort, false))
   })
   updateDropdownOptions(dataRadarChartAge, ascending)
+  // Ajouter un écouteur pour le scroll
 }
 
 /**
