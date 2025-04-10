@@ -72,7 +72,9 @@ export function initDropdownAndPlot (topCategories, mergedData) {
    * @param selectedCategory
    */
   function updatePlot (selectedCategory) {
-    d3.select('#graph-5').select('svg').remove()
+    const container = d3.select('#screen')
+    container.selectAll('*').remove()
+    container.append('svg')
     const categoriesToPlot = selectedCategory === 'All' ? topCategories : [selectedCategory]
     drawStackedDotPlot(categoriesToPlot, mergedData)
   }
