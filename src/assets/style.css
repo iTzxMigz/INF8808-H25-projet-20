@@ -256,6 +256,13 @@ font-size: 1.6vh;
     .seat {
       transform: skew(8deg);
     }
+  }
+  .row-8 {
+    transform: skew(-5deg);
+
+    .seat {
+      transform: skew(6deg);
+    }
   } 
 }
 
@@ -284,6 +291,7 @@ font-size: 1.6vh;
   }
   
   .row-2 {
+    z-index: 6;
     transform: skew(9deg);
 
     .seat {
@@ -292,6 +300,7 @@ font-size: 1.6vh;
   }
 
   .row-3 {
+    z-index: 5;
     transform: skew(10deg);
 
     .seat {
@@ -300,6 +309,7 @@ font-size: 1.6vh;
   }
 
   .row-4 {
+    z-index: 4;
     transform: skew(11deg);
 
     .seat {
@@ -308,6 +318,7 @@ font-size: 1.6vh;
   }
 
   .row-5 {
+    z-index: 3;
     transform: skew(12deg);
 
     .seat {
@@ -316,6 +327,7 @@ font-size: 1.6vh;
   }
 
   .row-6 {
+    z-index: 2;
     transform: skew(13deg);
 
     .seat {
@@ -324,12 +336,21 @@ font-size: 1.6vh;
   }
 
   .row-7 {
+    z-index: 1;
     transform: skew(15deg);
 
     .seat {
       transform: skew(-20deg);
     }
   } 
+  .row-8 {
+    z-index: 0;
+    transform: skew(17deg);
+
+    .seat {
+      transform: skew(-22deg);
+    }
+  }
 }
 
 
