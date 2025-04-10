@@ -286,7 +286,6 @@ export function drawStackedDotPlot (categoryToPlot, topCategories, mergedData, s
   }
 
   const maxValue = determineStacks(x, topCategories, mergedData, radius, height-50);
-  console.log(maxValue)
 
   categoryToPlot.forEach((category, index) => {
     let filteredMovies = mergedData.filter(d => d.Listed_in.includes(category))
