@@ -220,7 +220,7 @@ function drawRadarGrid (svgEnter, radius, maxValue) {
 
     svgEnter.append('text')
       .attr('x', 0)
-      .attr('y', -levelFactor)
+      .attr('y', -levelFactor + 8)
       .attr('text-anchor', 'middle')
       .text(`${(i / levels) * maxValue}%`)
       .style('font-size', '8px')
@@ -241,17 +241,17 @@ function drawRadarAxes (svg, axes, radius, isAgeCert) {
   axisLabels.join(
     enter => enter.append('text')
       .attr('class', 'axis-label')
-      .attr('x', (d, i) => Math.cos(angleSlice * i - Math.PI / 2) * radius * 1.4)
-      .attr('y', (d, i) => Math.sin(angleSlice * i - Math.PI / 2) * radius * 1.4)
+      .attr('x', (d, i) => Math.cos(angleSlice * i - Math.PI / 2) * radius)
+      .attr('y', (d, i) => Math.sin(angleSlice * i - Math.PI / 2) * radius)
       .attr('text-anchor', 'middle')
       .attr('font-family', "'Bebas Neue', sans-serif")
       .style('fill', '#000')
-      .style('font-size', isAgeCert ? '12px' : '9px')
+      .style('font-size', isAgeCert ? '12px' : '7px')
       .text(d => d),
     update => update.transition().duration(500)
-      .attr('x', (d, i) => Math.cos(angleSlice * i - Math.PI / 2) * radius * 1.4)
-      .attr('y', (d, i) => Math.sin(angleSlice * i - Math.PI / 2) * radius * 1.4)
-      .style('font-size', isAgeCert ? '12px' : '9px')
+      .attr('x', (d, i) => Math.cos(angleSlice * i - Math.PI / 2) * radius)
+      .attr('y', (d, i) => Math.sin(angleSlice * i - Math.PI / 2) * radius)
+      .style('font-size', isAgeCert ? '12px' : '7px')
       .text(d => d),
     exit => exit.transition().duration(300).style('opacity', 0).remove()
   )
