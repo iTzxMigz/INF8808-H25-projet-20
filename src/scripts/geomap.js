@@ -113,20 +113,16 @@ export function drawGeomap (data) {
 
       .attr('stroke', '#000')
       .style('pointer-events', 'none')
-
-	  countryPaths
-	  .filter(d => {
-        const name = countryNameMapping[d.properties.name] || d.properties.name
-        return countryCounts[name] !== undefined
-	  })
-	  .on('mouseover', function (event, d) {
+    countryPaths.filter(d => {
+      const name = countryNameMapping[d.properties.name] || d.properties.name
+      return countryCounts[name] !== undefined
+    })
+      .on('mouseover', function (event, d) {
         const name = countryNameMapping[d.properties.name] || d.properties.name
 
         // Mettre en évidence le pays sur la carte
         d3.selectAll('path').attr('fill', '#ccc').attr('opacity', 0.5)
-        d3.select(this).attr('fill', '#666').attr('opacity', 1)
-					   .style('stroke', 'black')
-					   .style('stroke-width', 2)
+        d3.select(this).attr('fill', '#666').attr('opacity', 1).style('stroke', 'black').style('stroke-width', 2)
 
         // Mettre en évidence la ligne correspondante dans le tableau
         d3.selectAll('tr').classed('highlight', false)
@@ -135,34 +131,34 @@ export function drawGeomap (data) {
         // Faire défiler automatiquement jusqu'à la ligne correspondante
         const rowNode = row.node()
         if (rowNode) {
-		  rowNode.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          rowNode.scrollIntoView({ behavior: 'smooth', block: 'center' })
         }
 
         // Afficher le tooltip
         tooltip.transition().duration(100).style('opacity', 0.9)
-        tooltip.html(`
-		  <u>${name}</u><br>
-		  Total titles: ${countryCounts[name]}<br>
-		  Avg IMDb: ${countryAverages[name].toFixed(2)}
-		`)
+        tooltip.html(`<u>${name}</u><br>
+Total titles: ${countryCounts[name]}<br>
+Avg IMDb: ${countryAverages[name].toFixed(2)}
+`)
           .style('left', (event.pageX + 10) + 'px')
           .style('top', (event.pageY - 28) + 'px')
           .style('font-family', 'Bebas Neue')
           .style('font-size', '18px')
-	  })
-	  .on('mousemove', function (event) {
+      })
+      .on('mousemove', function (event) {
         tooltip
-		  .style('left', (event.pageX + 10) + 'px')
-		  .style('top', (event.pageY - 28) + 'px')
-	  })
-	  .on('mouseout', function () {
-        d3.selectAll('path').attr('fill', '#ccc').attr('opacity', 1)
-          .style('stroke', 'none')
-
+          .style('left', (event.pageX + 10) + 'px')
+          .style('top', (event.pageY - 28) + 'px')
+      })
+      .on('mouseout', function () {
+        d3.selectAll('path')
+          .attr('fill', '#ccc')
+          .attr('opacity', 1)
+          .style('stroke', '#333')
+          .style('stroke-width', 1)
         d3.selectAll('tr').classed('highlight', false)
-
         tooltip.transition().duration(100).style('opacity', 0)
-	  })
+      })
 
     /**
      * @param sortedCountries

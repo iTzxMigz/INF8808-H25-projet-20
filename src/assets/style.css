@@ -470,7 +470,7 @@ font-size: 1.6vh;
 
 #scroll-down-animation {
   position: absolute;
-  top: 50%;
+  top: 75%;
   right: 10%;
   transform: translate(-50%,-50%);
 }

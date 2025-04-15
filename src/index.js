@@ -43,7 +43,7 @@ let chartData, heatmapData, dataRadarChartAge, dataRadarChartCat, movies, dataSt
  */
 function callFunction1 () {
   hideTooltip()
-  d3.select('.info-container p').text('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
+  d3.select('.info-container p').text("Let's take a look at the volume of content added to Netflix each year, distinguishing between movies and series. There was a clear acceleration after 2015, marking a strategy of catalog diversification. The platform's expansion period also marks the start of a new craze for series. At this time, the first exclusive series arrived on the platform, the American drama House of Cards.")
   d3.select('.bottom-bar h1').text('Movies and Series added to Netflix by year')
   d3.select('#table-container').classed('active', false)
   drawStackedBarChart(chartData)
@@ -54,7 +54,7 @@ function callFunction1 () {
  */
 function callFunction2 () {
   hideTooltip()
-  d3.select('.info-container p').text('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
+  d3.select('.info-container p').text("With regard to the evolution of the most represented genres from 2009 to 2021, it highlights the dominant trends with the rise of drama or comedy, and helps to anticipate successful genres. It's the “international” category that brings together the most content, revealing that the platform enables films from all over the world to be showcased.")
   d3.select('.bottom-bar h1').text('Distribution of categories per year on Netflix')
   const container = d3.select('#button-container')
   container.selectAll('*').remove()
@@ -68,7 +68,19 @@ function callFunction2 () {
 function callFunction3 () {
   hideTooltip()
   d3.select('#scroll-down-animation').style('display', 'block')
-  d3.select('.info-container p').text('_____Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
+  d3.select('.info-container p').text("Let's compare the dominant categories by country, highlighting cultural specificities in terms of production. This allows us to identify the thematic strengths of each country, and to direct purchasing or local production strategies according to cultural expectations. This targeting refines our international offering. By changing indicators, we can observe the audiences targeted by age rattings.")
+  d3.select('.info-container p').append('ul')
+    .selectAll('li')
+    .data([
+      'Rated G: General audiences – All ages admitted',
+      'Rated PG: Parental guidance suggested',
+      'Rated PG-13: Parents strongly cautioned',
+      'Rated R: Restricted – Under 17 requires accompanying parent or adult guardian',
+      'Rated NC-17: No Children Under 17 Admitted'
+    ])
+    .enter()
+    .append('li')
+    .text(d => d)
   d3.select('.bottom-bar h1').text('Distribution of Age Ratings by Country')
   const container = d3.select('#button-container')
   container.selectAll('*').remove()
@@ -83,7 +95,7 @@ function callFunction3 () {
  */
 function callFunction4 () {
   hideTooltip()
-  d3.select('.info-container p').text('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
+  d3.select('.info-container p').text("These proportional circles show the total number of films and series per country. We can pinpoint the most productive geographical areas and enhance the diversity of the catalog. This can be seen as an opportunity to explore new, under-represented markets, or to strengthen existing partnerships.")
   d3.select('.bottom-bar h1').text('Content Production and IMDb Scores by Country on Netflix')
   const container = d3.select('#button-container')
   container.selectAll('*').remove()
@@ -120,7 +132,7 @@ function callFunction4 () {
  */
 function callFunction5 () {
   hideTooltip()
-  d3.select('.info-container p').text('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.')
+  d3.select('.info-container p').text('Finally, the distribution of IMDb scores by genre can guide the choice of new content. The IMDb score, awarded by users, is an indicator of satisfaction and perceived quality. Select the indicator and the category to observe the results in detail. This will reveal which categories are most appreciated by the public, and give you an idea of the age range of the target audience for each category, so that you can adapt your marketing and advertising choices.')
   d3.select('.bottom-bar h1').text('IMDB Scores by Category')
   d3.select('#table-container').classed('active', false)
   const container = d3.select('#button-container')
