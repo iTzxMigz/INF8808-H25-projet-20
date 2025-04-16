@@ -16,6 +16,7 @@ export function createChangingModeButton (dataRadarChartAge, dataRadarChartCat) 
     .attr('id', 'radar-toggle-btn')
     .attr('class', 'toolbar-btn')
     .style('margin-right', '10px')
+    .style('margin-top', "0.5vh")
     .style('font-family', "'Bebas Neue', sans-serif")
     .text('Switch to Categories')
 

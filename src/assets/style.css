@@ -76,8 +76,8 @@ h2 {
 .dropdown {
     position: relative;
     display: inline-block;
-    padding-bottom: 4px;
-  }
+    padding-top: 0.5vh;
+}
 
 .toolbar-btn {
 width: 20vw;
@@ -85,7 +85,7 @@ background-color: #141414;
 color: white;
 border: 2px solid #e50914;
 padding-top: 1vh;
-padding-bottom: 1vh;
+padding-bottom: 0;
 padding-left: 1vw;
 padding-right: 1vw;
 font-weight: bold;
@@ -93,6 +93,7 @@ cursor: pointer;
 border-radius: 4px;
 transition: background-color 0.2s ease;
 font-size: 1.6vh;
+padding-bottom: 1vh;
 }
   
 .toolbar-btn:hover {
@@ -112,7 +113,7 @@ font-size: 1.6vh;
   border-radius: 4px;
   margin-top: 0.5vh; /* Supprimez cette ligne si elle existe */
   bottom: 100%; /* Positionne le contenu au-dessus du bouton */
-  margin-bottom: 0.5vh; /* Ajoute un petit espace entre le bouton et le contenu */
+  margin: 0;
 }
   
   /* Dropdown options */
