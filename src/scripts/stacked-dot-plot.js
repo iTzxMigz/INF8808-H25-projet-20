@@ -1,3 +1,5 @@
+import { autoType } from "d3"
+
 export let isIMDB = true
 export const titleIMDB = 'IMDB Scores by Category'
 export const titleAge = 'Age Certifications by Category'
@@ -33,6 +35,8 @@ export function initDropdownAndPlot (topCategories, mergedData) {
     .attr('class', 'dropdown-content')
     .style('display', 'none');
 
+  let currentCategory = topCategories[0];
+
   // Append options to the dropdown-content
   ['All', ...topCategories].forEach(option => {
     dropdownContent.append('p')
@@ -43,7 +47,12 @@ export function initDropdownAndPlot (topCategories, mergedData) {
         dropdownContent.style('display', 'none')
         dropdown.select('button').text(option)
         updatePlot(option)
+        currentCategory = option
       })
+  })
+
+  window.addEventListener('resize', () => {
+    updatePlot(currentCategory)
   })
 
   dropdown.on('mouseenter', () => {
@@ -77,22 +86,28 @@ export function initDropdownAndPlot (topCategories, mergedData) {
 
     if (selectedCategory === 'All') {
       container.classed('all-category', true) // Ajoute la classe pour le style en grille
+
+      const containerWidth = document.getElementById('screen').clientWidth || 1000
+      const containerHeight = document.getElementById('screen').clientHeight || 400
+
+      const columns = 4
+      const lignes = 3
+
       const svg = container.append('svg')
-        .attr('width', 1000)
-        .attr('height', 450)
+        .attr('width', containerWidth)
+        .attr('height', containerHeight)
 
       const gridGroup = svg.append('g')
         .attr('class', 'grid-group')
 
-      const columns = 3 // Réduit le nombre de colonnes à 3
       topCategories.forEach((category, index) => {
-        const x = (index % columns) * 333 // Position horizontale dans la grille
-        const y = Math.floor(index / columns) * 150 // Position verticale dans la grille
+        const x = (index % columns) * 0.9 * containerWidth / columns // Position horizontale dans la grille
+        const y = Math.floor(index / columns) * containerHeight / (lignes + 1) // Position verticale dans la grille
 
         const categoryGroup = gridGroup.append('g')
           .attr('transform', `translate(${x}, ${y})`)
 
-        drawStackedDotPlot([category], topCategories, mergedData, categoryGroup, 350, 150, 1.1) // Dimensions adaptées
+        drawStackedDotPlot([category], topCategories, mergedData, categoryGroup, 1) // Dimensions adaptées
       })
     } else {
       container.classed('all-category', false) // Supprime la classe pour le style en grille
@@ -127,7 +142,7 @@ export function determineStacks(x, topCategories, mergedData, radius, height) {
  * @param root0.radius
  * @param root0.x
  */
-  function get_max_stacks (data, { radius = 1, x = d => d } = {}, stackHeightLimit) {
+  function getMaxStacks (data, { radius = 1, x = d => d } = {}, stackHeightLimit) {
     const circles = data.map((d, i, data) => ({ x: +x(d, i, data), data: d })).sort((a, b) => a.x - b.x)
 
     // Compute total number of circles at each x
@@ -153,11 +168,11 @@ export function determineStacks(x, topCategories, mergedData, radius, height) {
     let filteredMovies = mergedData.filter(d => d.Listed_in.includes(category))
     filteredMovies = isIMDB ? filteredMovies : filteredMovies.filter(d => d.AgeCertification != null)
     filteredMovies.sort((a, b) => a.Type.localeCompare(b.Type))
-    const large = get_max_stacks(filteredMovies, { radius: radius * 2, x: d => isIMDB ? x(d.Score) : x(d.AgeCertification) }, height)
+    const large = getMaxStacks(filteredMovies, { radius: radius * 2, x: d => isIMDB ? x(d.Score) : x(d.AgeCertification) }, height)
     largestStacks.set(category, large)
   })
   const maxValue = Math.max(...[...largestStacks.values()].map(v => v[1]))
-  return maxValue;
+  return maxValue
 }
 
 /**
@@ -169,15 +184,51 @@ export function determineStacks(x, topCategories, mergedData, radius, height) {
  * @param width
  * @param height
  */
-export function drawStackedDotPlot (categoryToPlot, topCategories, mergedData, svgGroup = null, width = 900, height = 450, radius = 3) {
-  const container = svgGroup || d3.select('#screen').select('svg')
-  container.selectAll('*').remove() // Supprime les anciens contenus avant de dessiner
+export function drawStackedDotPlot(categoryToPlot, topCategories, mergedData, svgGroup = null, radius = 3) {
+  // Déterminer la largeur du conteneur dynamiquement
+  const screenContainer = document.getElementById('screen')
+  const containerWidth = screenContainer.clientWidth || 900 // fallback
+  const containerHeight = screenContainer.clientHeight || 450 // fallback
 
+  const margin = 30
+  const width = containerWidth
+  const height = containerHeight // hauteur par catégorie, constante ici
+
+  let figureW = width
+  let figureH = height
+
+  if (svgGroup != null) {
+    figureW = containerWidth / 4
+    figureH = containerHeight / 2.9
+  }
+
+  radius = Math.min(figureH, figureW / 2) / 150
+
+  const categorySpacing = height + margin
+
+  // Sélection du SVG
+  const container = svgGroup || d3.select('#screen').select('svg')
+    .attr('width', width)
+    .attr('height', height)
+    .attr('viewBox', `0 0 ${width} ${height}`)
+    .attr('preserveAspectRatio', 'xMidYMid meet')
+
+  container.selectAll('*').remove()
+
+  // Légende
   let legend = d3.select('body').select('.legend')
   if (legend.empty()) {
-    legend = d3.select('#screen').select('svg').append('g')
+    if (svgGroup != null) {
+      legend = container.append('g')
+        .attr('class', 'legend')
+        .attr('transform', `translate(${0.8 * width}, ${0.7 * height})`)
+    }
+    else {
+      legend = container.append('g')
       .attr('class', 'legend')
-      .attr('transform', `translate(875, 20)`)
+      .attr('transform', `translate(${0.8 * width}, ${0.1 * height})`)
+    }
+    
 
     const legendData = [
       { type: 'Movies', color: '#E50914' },
@@ -204,24 +255,21 @@ export function drawStackedDotPlot (categoryToPlot, topCategories, mergedData, s
       .attr('fill', '#000')
   }
 
-  const margin = 40
-
+  // Échelle X
   let x
   if (isIMDB) {
     x = d3.scaleLinear()
       .domain([0, 10])
-      .range([margin, width - margin])
+      .range([margin, figureW - margin])
   } else {
     const ageCategories = [...new Set(mergedData.map(d => d.AgeCertification))].sort()
     x = d3.scalePoint()
       .domain(ageCategories.filter(item => item !== null))
-      .range([margin, width - margin])
+      .range([margin, figureW - margin])
       .padding(0.5)
   }
 
-  const categorySpacing = height + margin
-  const svgHeight = categorySpacing * topCategories.length
-
+  // Tooltip
   let tooltip = d3.select('body').select('.tooltip')
   if (tooltip.empty()) {
     tooltip = d3.select('body').append('div')
@@ -285,7 +333,7 @@ export function drawStackedDotPlot (categoryToPlot, topCategories, mergedData, s
     return circles
   }
 
-  const maxValue = determineStacks(x, topCategories, mergedData, radius, height-50);
+  const maxValue = determineStacks(x, topCategories, mergedData, radius, 0.9 * figureH)
 
   categoryToPlot.forEach((category, index) => {
     let filteredMovies = mergedData.filter(d => d.Listed_in.includes(category))
@@ -301,7 +349,7 @@ export function drawStackedDotPlot (categoryToPlot, topCategories, mergedData, s
       .data(dodge(filteredMovies, { radius: radius * 2, x: d => isIMDB ? x(d.Score) : x(d.AgeCertification) }, maxValue))
       .join('circle')
       .attr('cx', d => x(isIMDB ? d.data.Score : d.data.AgeCertification) + d.x_offset)
-      .attr('cy', d => height - margin - radius - d.y)
+      .attr('cy', d => figureH - margin - radius - d.y)
       .attr('r', radius)
       .attr('fill', (d) => d.data.Type === 'Movie' ? '#E50914' : '#221F1F')
       .on('mouseover', function (event, d) {
@@ -323,18 +371,19 @@ export function drawStackedDotPlot (categoryToPlot, topCategories, mergedData, s
         tooltip.transition().duration(100).style('opacity', 0)
       })
 
+    // nom de la catégorie
     categoryGroup.append('text')
       .attr('x', 10)
-      .attr('y', height / 2)
+      .attr('y', figureH / 3)
       .attr('dy', '.35em')
       .attr('text-anchor', 'start')
       .text(category)
-      .style('font-size', '18px')
+      .style('font-size', `${figureW / 20}px`)
       .style('font-weight', 'bold')
       .style('font-family', "'Bebas Neue', sans-serif")
 
     categoryGroup.append('g')
-      .attr('transform', `translate(0, ${height - margin})`)
+      .attr('transform', `translate(0, ${figureH - margin})`)
       .call(isIMDB ? d3.axisBottom(x).ticks(5).tickSizeOuter(0) : d3.axisBottom(x))
       .style('font-family', "'Bebas Neue', sans-serif")
 

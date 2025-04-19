@@ -6,8 +6,10 @@ export function drawStackedBarChart (data) {
   const container = d3.select('#screen')
   container.selectAll('*').remove()
   const svg = container.append('svg')
-    .attr('width', width)
-    .attr('height', height)
+    .attr('viewBox', `0 0 ${width} ${height}`)
+    .attr('preserveAspectRatio', 'xMidYMid meet')
+    .style('width', '100%')
+    .style('height', '100%')
   const minYear = d3.min(data, d => d.year)
   const maxYear = d3.max(data, d => d.year)
 

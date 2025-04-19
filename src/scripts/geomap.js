@@ -40,8 +40,10 @@ export function drawGeomap (data) {
   container.selectAll('*').remove()
 
   const svg = container.append('svg')
-    .attr('width', width)
-    .attr('height', height)
+    .attr('viewBox', `0 0 ${width} ${height}`)
+    .attr('preserveAspectRatio', 'xMidYMid meet')
+    .style('width', '100%')
+    .style('height', '100%')
 
   const projection = geoRobinson()
     .scale(150)
@@ -165,13 +167,14 @@ Avg IMDb: ${countryAverages[name].toFixed(2)}
      * @param highlightCountry
      */
     function renderCountryTable (sortedCountries, highlightCountry = null) {
-      const tbody = d3.select('country-table-body')
-      tbody.selectAll('tr').remove()
-
+      const tbody = d3.select('#country-table-body') // <- correction ici
+      tbody.selectAll('tr').remove() // <- ceci vide la liste
+    
       sortedCountries.forEach(([country, count]) => {
         const row = tbody.append('tr')
           .attr('data-country', country)
           .classed('highlight', country === highlightCountry)
+    
         row.append('td').text(country)
         row.append('td').text(count)
         row.append('td').text(countryAverages[country].toFixed(2))
@@ -180,30 +183,27 @@ Avg IMDb: ${countryAverages[name].toFixed(2)}
 
     const tableContainer = d3.select('#table-container')
 
-    const table = tableContainer.append('table')
+    // Vérifie si la table existe déjà
+    let table = tableContainer.select('table')
+    if (table.empty()) {
+      table = tableContainer.append('table')
+    
+      // Header (uniquement une fois)
+      const thead = table.append('thead')
+      thead.append('tr')
+        .selectAll('th')
+        .data(['Country', 'Total Movies', 'Average IMDB Score'])
+        .enter()
+        .append('th')
+        .text(d => d)
 
-    // Header
-    const thead = table.append('thead')
-    thead.append('tr')
-      .selectAll('th')
-      .data(['Country', 'Total Movies', 'Average IMDB Score'])
-      .enter()
-      .append('th')
-      .text(d => d)
-
-    // Body
-    const tbody = table.append('tbody').attr('id', 'country-table-body')
+      // Body
+      table.append('tbody').attr('id', 'country-table-body')
+    }
 
     const sortedCountries = Object.entries(countryCounts).sort((a, b) => b[1] - a[1])
 
     const originalSortedCountries = [...sortedCountries]
     renderCountryTable(originalSortedCountries)
-
-    sortedCountries.forEach(([country, count]) => {
-      const row = tbody.append('tr').attr('data-country', country)
-      row.append('td').text(country)
-      row.append('td').text(count)
-      row.append('td').text(countryAverages[country].toFixed(2))
-    })
   })
 }
