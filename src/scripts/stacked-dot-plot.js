@@ -221,12 +221,12 @@ export function drawStackedDotPlot(categoryToPlot, topCategories, mergedData, sv
     if (svgGroup != null) {
       legend = container.append('g')
         .attr('class', 'legend')
-        .attr('transform', `translate(${0.8 * width}, ${0.7 * height})`)
+        .attr('transform', `translate(${0.7 * width}, ${0.7 * height})`)
     }
     else {
       legend = container.append('g')
       .attr('class', 'legend')
-      .attr('transform', `translate(${0.8 * width}, ${0.1 * height})`)
+      .attr('transform', `translate(${0.05 * width}, ${0.45 * height})`)
     }
     
 
@@ -251,7 +251,7 @@ export function drawStackedDotPlot(categoryToPlot, topCategories, mergedData, sv
       .attr('y', (d, i) => i * 20 + 14)
       .text(d => d.type)
       .attr('font-family', "'Bebas Neue', sans-serif")
-      .attr('font-size', '18px')
+      .attr('font-size', `${Math.min(width / 20, 22)}px`)
       .attr('fill', '#000')
   }
 
@@ -378,7 +378,7 @@ export function drawStackedDotPlot(categoryToPlot, topCategories, mergedData, sv
       .attr('dy', '.35em')
       .attr('text-anchor', 'start')
       .text(category)
-      .style('font-size', `${figureW / 20}px`)
+      .style('font-size', `${Math.max(figureW / 20, 10)}px`)
       .style('font-weight', 'bold')
       .style('font-family', "'Bebas Neue', sans-serif")
 
