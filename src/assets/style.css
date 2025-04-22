@@ -388,13 +388,15 @@ width: 100%;
 
 #screen {
 display: grid;
-grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+grid-template-columns: repeat(auto-fit, minmax(10%, 1fr));
 gap: 4%;
 justify-items: center;
 align-items: center;
 padding: 2%;
 row-gap: 0.2%;
 }
+
+
 
 .container-radar {
 display: flex;

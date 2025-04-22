@@ -62,6 +62,10 @@ export function createChangingModeButton (dataRadarChartAge, dataRadarChartCat) 
   })
   updateDropdownOptions(dataRadarChartAge, ascending)
   // Ajouter un écouteur pour le scroll
+
+  window.addEventListener('resize', () => {
+    drawMultipleRadarCharts(data, isAgeCertMode)
+  })
 }
 
 /**
@@ -134,16 +138,15 @@ function updateRadar (data) {
 export function drawMultipleRadarCharts (data, isAgeCert) {
   const container = d3.select('#screen')
   container.selectAll('*').remove()
-  const numCharts = data.length // Nombre total de graphiques (26)
-  const screenWidth = 890 // Largeur de l'écran
-  const screenHeight = 440 // Hauteur de l'écran
-  const columns = Math.ceil(Math.sqrt(numCharts)) // Nombre de colonnes dans la grille
-  const rows = Math.ceil(numCharts / columns) // Nombre de lignes dans la grille
+  const screenWidth = document.getElementById('screen').clientWidth // Largeur de l'écran
+  const screenHeight = document.getElementById('screen').clientHeight // Hauteur de l'écran
+  const columns = 7 // On a 21 plots à afficher.
+  const rows = 3 // Dimensions forcées, marche mieux que la solution d'avant je trouve.
 
   // Calculer la taille des conteneurs pour qu'ils rentrent tous
-  const width = Math.min(screenWidth / columns, screenHeight / rows)*1.55 // Largeur dynamique avec un espace de 20px
+  const width = Math.min(screenWidth / (columns + 0.5), screenHeight / (rows + 0.5)) // Largeur dynamique avec un espace de 20px
   const height = width // Garder un ratio 1:1
-  const padding = 24 // Espace interne pour le radar
+  const padding = width / 8 // Espace interne pour le radar
   const radius = Math.min(width, height) / 2 - padding
   const maxValue = 100
 
@@ -161,14 +164,14 @@ export function drawMultipleRadarCharts (data, isAgeCert) {
     .attr('width', width)
     .attr('height', height)
     .append('g')
-    .attr('transform', `translate(${width / 2}, ${height / 2})`)
+    .attr('transform', `translate(${width * 0.95 / 2}, ${height / 2})`) // Léger décalage pour mieux centrer.
 
   drawRadarGrid(svgEnter, radius, maxValue)
 
   countryEnter.append('text')
     .attr('text-anchor', 'middle')
     .attr('font-family', "'Bebas Neue', sans-serif")
-    .style('font-size', '12px')
+    .style('font-size', `${height / 11}px`)
     .style('font-weight', 'bold')
     .style('fill', '#000')
     .text(d => d.country)
