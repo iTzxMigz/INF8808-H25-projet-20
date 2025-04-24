@@ -6,6 +6,7 @@ import { drawStackedBarChart } from './scripts/stack-barchart.js'
 import { drawHeatmap } from './scripts/heatmap.js'
 import * as geomap from './scripts/geomap.js'
 import * as stackDotPlot from './scripts/stacked-dot-plot.js'
+import { color } from 'd3'
 
 let chartData, heatmapData, dataRadarChartAge, dataRadarChartCat, movies, dataStackedDotPlot;
 
@@ -33,17 +34,31 @@ let chartData, heatmapData, dataRadarChartAge, dataRadarChartCat, movies, dataSt
 
     // Ajouter un écouteur d'événement pour le scroll
     window.addEventListener('scroll', handleScroll)
-    callFunction1() // Appeler la première fonction au chargement de la page
+    callFunction0() // Appeler la première fonction au chargement de la page
   })
 })(d3)
 
 // Sous-fonctions accessibles globalement
+function callFunction0 () {
+  hideTooltip()
+  d3.select('.info-container p').text("")
+  d3.select('.bottom-bar h1').text('Netflix DataViz')
+  d3.select('#table-container').classed('active', false)
+  const container = d3.select('#screen')
+  container.selectAll('*').remove()
+  container.append('p')
+    .style('color', 'black')
+    .style('font-size', '3em')
+    .style('text-align', 'center')
+    .style('width', '100%')
+    .text('Understanding the strategies that have made Netflix the streaming leader')
+}
 /**
  *
  */
 function callFunction1 () {
   hideTooltip()
-  d3.select('.info-container p').text("Let's take a look at the volume of content added to Netflix each year, distinguishing between movies and series. There was a clear acceleration after 2015, marking a strategy of catalog diversification. The platform's expansion period also marks the start of a new craze for series. At this time, the first exclusive series arrived on the platform, the American drama House of Cards.")
+  d3.select('.info-container p').html("Let's take a look at the volume of content added to Netflix each year, distinguishing between movies and series. There was a clear acceleration after 2015, marking a strategy of catalog diversification. The platform's expansion period also marks the start of a new craze for series. At this time, the first exclusive series arrived on the platform, the American drama House of Cards.<br><br> The addition of a large amount of content reflects Netflix’s strategy to expand its catalog in order to retain its audience and attract new subscribers.")
   d3.select('.bottom-bar h1').text('Movies and Series added to Netflix by year')
   d3.select('#table-container').classed('active', false)
   drawStackedBarChart(chartData)
@@ -54,7 +69,7 @@ function callFunction1 () {
  */
 function callFunction2 () {
   hideTooltip()
-  d3.select('.info-container p').text("With regard to the evolution of the most represented genres from 2009 to 2021, it highlights the dominant trends with the rise of drama or comedy, and helps to anticipate successful genres. It's the “international” category that brings together the most content, revealing that the platform enables films from all over the world to be showcased.")
+  d3.select('.info-container p').html("With regard to the evolution of the most represented genres from 2009 to 2021, it highlights the dominant trends with the rise of drama or comedy, and helps to anticipate successful genres. It's the “international” category that brings together the most content, revealing that the platform enables films from all over the world to be showcased.<br><br>The content is not chosen at random—there is a clear emphasis on dramas, comedies, and international productions, which shows that Netflix knows its audience and aims to meet specific expectations. It is likely that the proportions of each genre will remain relatively stable.")
   d3.select('.bottom-bar h1').text('Distribution of categories per year on Netflix')
   const container = d3.select('#button-container')
   container.selectAll('*').remove()
@@ -72,7 +87,7 @@ function callFunction3 () {
   d3.select('.info-container p').append('ul')
     .selectAll('li')
     .data([
-      'Rated G: General audiences – All ages admitted',
+      'Rated G: General audiences',
       'Rated PG: Parental guidance suggested',
       'Rated PG-13: Parents strongly cautioned',
       'Rated R: Restricted – Under 17 requires accompanying parent or adult guardian',
@@ -81,6 +96,8 @@ function callFunction3 () {
     .enter()
     .append('li')
     .text(d => d)
+  d3.select('.info-container p').append('p')
+    .text('Western countries are more likely to consume “R”-rated content, while Asian countries may tend to favor more family-friendly or general audience content.')
   d3.select('.bottom-bar h1').text('Distribution of Age Ratings by Country')
   const container = d3.select('#button-container')
   container.selectAll('*').remove()
@@ -95,7 +112,7 @@ function callFunction3 () {
  */
 function callFunction4 () {
   hideTooltip()
-  d3.select('.info-container p').text("These proportional circles show the total number of films and series per country. We can pinpoint the most productive geographical areas and enhance the diversity of the catalog. This can be seen as an opportunity to explore new, under-represented markets, or to strengthen existing partnerships.")
+  d3.select('.info-container p').text('These proportional circles show the total number of films and series per country. We can pinpoint the most productive geographical areas and enhance the diversity of the catalog. This can be seen as an opportunity to explore new, under-represented markets, or to strengthen existing partnerships.')
   d3.select('.bottom-bar h1').text('Content Production and IMDb Scores by Country on Netflix')
   const container = d3.select('#button-container')
   container.selectAll('*').remove()
@@ -132,7 +149,7 @@ function callFunction4 () {
  */
 function callFunction5 () {
   hideTooltip()
-  d3.select('.info-container p').text('Finally, the distribution of IMDb scores by genre can guide the choice of new content. The IMDb score, awarded by users, is an indicator of satisfaction and perceived quality. Select the indicator and the category to observe the results in detail. This will reveal which categories are most appreciated by the public, and give you an idea of the age range of the target audience for each category, so that you can adapt your marketing and advertising choices.')
+  d3.select('.info-container p').html('Finally, the distribution of IMDb scores by genre can guide the choice of new content. The IMDb score, awarded by users, is an indicator of satisfaction and perceived quality. Select the indicator and the category to observe the results in detail. This will reveal which categories are most appreciated by the public, and give you an idea of the age range of the target audience for each category, so that you can adapt your marketing and advertising choices.<br><br>Dramas and international content are the most appreciated, with the majority of ratings falling between 6 and 8. In contrast, comedies and romantic films show greater variability in audience satisfaction. This could explain why more dramas and international productions are added each year.')
   d3.select('.bottom-bar h1').text('IMDB Scores by Category')
   d3.select('#table-container').classed('active', false)
   const container = d3.select('#button-container')
@@ -142,7 +159,7 @@ function callFunction5 () {
 
 // Fonction de gestion du scroll
 let virtualScrollPosition = 0 // Position virtuelle du scroll
-const maxScroll = 3500 // Longueur totale du faux scroll
+const maxScroll = 4375 // Longueur totale du faux scroll
 
 /**
  * @param event
@@ -170,7 +187,7 @@ let lastFunctionIndex = -1 // -1 signifie qu'aucune fonction n'a été appelée 
  * @param scrollPosition
  */
 function updateContentBasedOnScroll (scrollPosition) {
-  const thresholds = [0, 875, 1750, 2625, 3500] // Seuils pour les différentes fonctions
+  const thresholds = [0, 875, 1750, 2625, 3500, 4375] // Seuils pour les différentes fonctions
 
   // Déterminer l'index de la fonction à appeler en fonction de la position du scroll
   let currentFunctionIndex = -1
@@ -188,18 +205,21 @@ function updateContentBasedOnScroll (scrollPosition) {
     // Appeler la fonction correspondante
     switch (currentFunctionIndex) {
       case 0:
-        callFunction1()
+        callFunction0()
         break
       case 1:
-        callFunction2()
+        callFunction1()
         break
       case 2:
-        callFunction3()
+        callFunction2()
         break
       case 3:
-        callFunction4()
+        callFunction3()
         break
       case 4:
+        callFunction4()
+        break
+      case 5:
         callFunction5()
         break
       default:
